@@ -16,5 +16,7 @@ namespace Twoishday.Models
         //Navigation properties
         public virtual ICollection<TDUser> Members { get; set; } = new HashSet<TDUser>();
         public virtual ICollection<Project> Projects { get; set; } = new HashSet<Project>();
+
+        //create relationship to invites
     }
 }

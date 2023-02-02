@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 using System.Reflection;
+using System.Collections.Generic;
 
 namespace Twoishday.Models
 {
@@ -13,38 +14,39 @@ namespace Twoishday.Models
 
         [Required]
         [DisplayName("Company")]
-        public int CompanyId { get; set; }
+        public int? CompanyId { get; set; }
 
         [Required]
+        [StringLength(50)]
         [DisplayName("Name")]
         public string Name { get; set; }
 
-        [Required]
+
         [DisplayName("Description")]
         public string Description { get; set; }
 
-        [DataType(DataType.Date)]
+        
         [DisplayName("Start Date")]
         public DateTimeOffset StartDate { get; set; }
 
-        [DataType(DataType.Date)]
+        
         [DisplayName("End Date")]
-        public DateTimeOffset EndDate { get; set; }
+        public DateTimeOffset? EndDate { get; set; }
 
-        [DisplayName("Project")]
-        public int ProjectId { get; set; }
+        [DisplayName("Priority")]
+        public int? ProjectPriorityId { get; set; }
 
         [NotMapped]
         [DataType(DataType.Upload)]
-        public IFormFile FormFile { get; set; }
+        public IFormFile IamgeFormFile { get; set; }
 
         [DisplayName("File Name")]
-        public string FileName { get; set; }
+        public string ImageFileName { get; set; }
 
-        public byte[] FileDate { get; set; }
+        public byte[] ImageFileDate { get; set; }
 
         [DisplayName("File Extension")]
-        public string FileContentType { get; set; }
+        public string ImageContentType { get; set; }
 
 
         [DisplayName("Archived")]
@@ -54,7 +56,8 @@ namespace Twoishday.Models
         //navigation properties
         public virtual Company Company { get; set; }
         public virtual ProjectPriority ProjectPriority { get; set; }
-        public virtual Ticket Ticket { get; set; }
-        public virtual TDUser User { get; set; }
+
+        public virtual ICollection<TDUser> Members { get; set; } = new HashSet<TDUser>();
+        public virtual ICollection<Ticket> Tickets { get; set; } = new HashSet<Ticket>();
     }
 }

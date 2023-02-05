@@ -18,5 +18,7 @@ namespace Twoishday.Models
         public virtual ICollection<Project> Projects { get; set; } = new HashSet<Project>();
 
         //create relationship to invites
+
+        public virtual ICollection<Invite> Invites { get; set; } = new HashSet<Invite>();
     }
 }

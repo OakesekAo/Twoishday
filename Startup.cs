@@ -13,6 +13,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Twoishday.Data;
 using Twoishday.Models;
+using Twoishday.Services;
+using Twoishday.Services.Interfaces;
 
 namespace Twoishday
 {
@@ -37,6 +39,10 @@ namespace Twoishday
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultUI()
                 .AddDefaultTokenProviders();
+
+            //Register services here
+            services.AddScoped<ITDRolesService, TDRoleService>();
+
             services.AddControllersWithViews();
         }
 

@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Twoishday.Data;
 using Twoishday.Models;
@@ -15,9 +18,11 @@ namespace Twoishday.Services
             _context = context;
         }
 
-        public Task AddNewProjectAsync(Project project)
+        // CRUD Create
+        public async Task AddNewProjectAsync(Project project)
         {
-            throw new System.NotImplementedException();
+            _context.Add(project);
+            await _context.SaveChangesAsync();
         }
 
         public Task<bool> AddProjectManagerAsync(string userId, int projectId)
@@ -25,14 +30,43 @@ namespace Twoishday.Services
             throw new System.NotImplementedException();
         }
 
-        public Task<bool> AddUserToProjectAsync(string userId, int projectId)
+        public async Task<bool> AddUserToProjectAsync(string userId, int projectId)
         {
-            throw new System.NotImplementedException();
+            TDUser user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user != null)
+            {
+                Project project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == projectId);
+                if (!await IsUserOnProjectAsync(userId, projectId))
+                {
+                    try
+                    {
+                        project.Members.Add(user);
+                        await _context.SaveChangesAsync();
+                        return true;
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
         }
 
-        public Task ArchiveProjectAsync(Project project)
+        // CRUD Delete
+        public async Task ArchiveProjectAsync(Project project)
         {
-            throw new System.NotImplementedException();
+            project.Archived = true;
+            _context.Update(project);
+            await _context.SaveChangesAsync();
         }
 
         public Task<List<TDUser>> GetAllProjectMembersExceptPMAsync(int projectId)
@@ -40,19 +74,50 @@ namespace Twoishday.Services
             throw new System.NotImplementedException();
         }
 
-        public Task<List<Project>> GetAllProjectsByCompany(int companyId)
+        public async Task<List<Project>> GetAllProjectsByCompany(int companyId)
         {
-            throw new System.NotImplementedException();
+            List<Project> projects = new();
+
+            projects = await _context.Projects.Where(p => p.CompanyId == companyId && p.Archived == false)
+                                            .Include(p => p.Members)
+                                            .Include(p => p.Tickets)
+                                                .ThenInclude(t => t.Comments)
+                                            .Include(p => p.Tickets)
+                                                .ThenInclude(t => t.Attachments)
+                                            .Include(p => p.Tickets)
+                                                .ThenInclude(t => t.History)
+                                            .Include(p => p.Tickets)
+                                                .ThenInclude(t => t.DeveloperUser)
+                                            .Include(p => p.Tickets)
+                                                .ThenInclude(t => t.OwnerUser)
+                                            .Include(p => p.Tickets)
+                                                .ThenInclude(t => t.Notifications)
+                                            .Include(p => p.Tickets)
+                                                .ThenInclude(t => t.TicketStatus)
+                                            .Include(p => p.Tickets)
+                                                .ThenInclude(t => t.TicketPriority)
+                                            .Include(p => p.Tickets)
+                                                .ThenInclude(t => t.TicketType)
+                                            .Include(p => p.ProjectPriority)
+                                            .ToListAsync();
+
+            return projects;
         }
 
-        public Task<List<Project>> GetAllProjectsByPriority(int companyId, string priorityName)
+        public async Task<List<Project>> GetAllProjectsByPriority(int companyId, string priorityName)
         {
-            throw new System.NotImplementedException();
+            List<Project> projects = await GetAllProjectsByCompany(companyId);
+            int priorityId = await LookupProjectPriorityId(priorityName);
+
+            return projects.Where(p => p.ProjectPriorityId == priorityId).ToList();
         }
 
-        public Task<List<Project>> GetArchivedProjectsByCompany(int companyId)
+        public async Task<List<Project>> GetArchivedProjectsByCompany(int companyId)
         {
-            throw new System.NotImplementedException();
+            List<Project> projects = await GetAllProjectsByCompany(companyId);
+
+            return projects.Where(p => p.Archived == true).ToList();
+
         }
 
         public Task<List<TDUser>> GetDevelopersOnProjectAsync(int projectId)
@@ -60,9 +125,15 @@ namespace Twoishday.Services
             throw new System.NotImplementedException();
         }
 
-        public Task<Project> GetProjectByIdAsync(int projectId, int companyId)
+        //CRUD Read
+        public async Task<Project> GetProjectByIdAsync(int projectId, int companyId)
         {
-            throw new System.NotImplementedException();
+            Project project = await _context.Projects
+                                            .Include(p => p.Tickets)
+                                            .Include(p => p.Members)
+                                            .Include(p => p.ProjectPriority)
+                                            .FirstOrDefaultAsync(p => p.Id == projectId && p.CompanyId == companyId);
+            return project;
         }
 
         public Task<TDUser> GetProjectManagerAsync(int projectId)
@@ -90,14 +161,24 @@ namespace Twoishday.Services
             throw new System.NotImplementedException();
         }
 
-        public Task<bool> IsUserOnProject(string userId, int projectId)
+        public async Task<bool> IsUserOnProjectAsync(string userId, int projectId)
         {
-            throw new System.NotImplementedException();
+            Project project = await _context.Projects.Include(p => p.Members).FirstOrDefaultAsync(p => p.Id == projectId);
+
+            bool result = false;
+
+            if (project != null)
+            {
+                result = project.Members.Any(m => m.Id == userId);
+            }
+            return result;
         }
 
-        public Task<int> LookupProjectPriorityId(string priorityName)
+        public async Task<int> LookupProjectPriorityId(string priorityName)
         {
-            throw new System.NotImplementedException();
+            int priorityId = (await _context.ProjectPriorities.FirstOrDefaultAsync(p => p.Name == priorityName)).Id;
+            return priorityId;
+
         }
 
         public Task RemoveProjectManagerAsync(int projectId)
@@ -105,9 +186,32 @@ namespace Twoishday.Services
             throw new System.NotImplementedException();
         }
 
-        public Task RemoveUserFromProjectAsync(string userId, int projectId)
+        public async Task RemoveUserFromProjectAsync(string userId, int projectId)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                TDUser user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+                Project project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == projectId);
+
+                try
+                {
+                    if (await IsUserOnProjectAsync(userId, projectId))
+                    {
+                        project.Members.Remove(user);
+                        await _context.SaveChangesAsync();
+                    }
+
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"*********** ERROR ************ - Error Removing User from project. --->{ex.Message}");
+                
+            }
         }
 
         public Task RemoveUsersFromProjectByRoleAsync(string role, int projectId)
@@ -115,9 +219,12 @@ namespace Twoishday.Services
             throw new System.NotImplementedException();
         }
 
-        public Task UpdateProjectAsync(Project project)
+        //CRUD Update
+        public async Task UpdateProjectAsync(Project project)
         {
-            throw new System.NotImplementedException();
+
+            _context.Update(project);
+            await _context.SaveChangesAsync();
         }
     }
 

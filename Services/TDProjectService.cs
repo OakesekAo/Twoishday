@@ -8,7 +8,6 @@ namespace Twoishday.Services
 {
     public class TDProjectService : ITDProjectService
     {
-
         private readonly ApplicationDbContext _context;
 
         public TDProjectService(ApplicationDbContext context)
@@ -16,109 +15,110 @@ namespace Twoishday.Services
             _context = context;
         }
 
-        Task ITDProjectService.AddNewProjectAsync(Project project)
+        public Task AddNewProjectAsync(Project project)
         {
             throw new System.NotImplementedException();
         }
 
-        Task<bool> ITDProjectService.AddProjectManagerAsync(string userId, int projectId)
+        public Task<bool> AddProjectManagerAsync(string userId, int projectId)
         {
             throw new System.NotImplementedException();
         }
 
-        Task<bool> ITDProjectService.AddUserToProjectAsync(string userId, int projectId)
+        public Task<bool> AddUserToProjectAsync(string userId, int projectId)
         {
             throw new System.NotImplementedException();
         }
 
-        Task ITDProjectService.ArchiveProjectAsync(Project project)
+        public Task ArchiveProjectAsync(Project project)
         {
             throw new System.NotImplementedException();
         }
 
-        Task<List<TDUser>> ITDProjectService.GetAllProjectMembersExceptPMAsync(int projectId)
+        public Task<List<TDUser>> GetAllProjectMembersExceptPMAsync(int projectId)
         {
             throw new System.NotImplementedException();
         }
 
-        Task<List<Project>> ITDProjectService.GetAllProjectsByCompany(int companyId)
+        public Task<List<Project>> GetAllProjectsByCompany(int companyId)
         {
             throw new System.NotImplementedException();
         }
 
-        Task<List<Project>> ITDProjectService.GetAllProjectsByPriority(int companyId, string priorityName)
+        public Task<List<Project>> GetAllProjectsByPriority(int companyId, string priorityName)
         {
             throw new System.NotImplementedException();
         }
 
-        Task<List<Project>> ITDProjectService.GetArchivedProjectsByCompany(int companyId)
+        public Task<List<Project>> GetArchivedProjectsByCompany(int companyId)
         {
             throw new System.NotImplementedException();
         }
 
-        Task<List<TDUser>> ITDProjectService.GetDevelopersOnProjectAsync(int projectId)
+        public Task<List<TDUser>> GetDevelopersOnProjectAsync(int projectId)
         {
             throw new System.NotImplementedException();
         }
 
-        Task<Project> ITDProjectService.GetProjectByIdAsync(int projectId, int companyId)
+        public Task<Project> GetProjectByIdAsync(int projectId, int companyId)
         {
             throw new System.NotImplementedException();
         }
 
-        Task<TDUser> ITDProjectService.GetProjectManagerAsync(int projectId)
+        public Task<TDUser> GetProjectManagerAsync(int projectId)
         {
             throw new System.NotImplementedException();
         }
 
-        Task<List<TDUser>> ITDProjectService.GetProjectMembersByRoleAsync(int projectId, string role)
+        public Task<List<TDUser>> GetProjectMembersByRoleAsync(int projectId, string role)
         {
             throw new System.NotImplementedException();
         }
 
-        Task<List<TDUser>> ITDProjectService.GetSubmittersOnProjectAsync(int projectId)
+        public Task<List<TDUser>> GetSubmittersOnProjectAsync(int projectId)
         {
             throw new System.NotImplementedException();
         }
 
-        Task<List<Project>> ITDProjectService.GetUserProjectsAsync(string userId)
+        public Task<List<Project>> GetUserProjectsAsync(string userId)
         {
             throw new System.NotImplementedException();
         }
 
-        Task<List<TDUser>> ITDProjectService.GetUsersNotOnProjectAsync(int projectId, int companyId)
+        public Task<List<TDUser>> GetUsersNotOnProjectAsync(int projectId, int companyId)
         {
             throw new System.NotImplementedException();
         }
 
-        Task<bool> ITDProjectService.IsUserOnProject(string userId, int projectId)
+        public Task<bool> IsUserOnProject(string userId, int projectId)
         {
             throw new System.NotImplementedException();
         }
 
-        Task<int> ITDProjectService.LookupProjectPriorityId(string priorityName)
+        public Task<int> LookupProjectPriorityId(string priorityName)
         {
             throw new System.NotImplementedException();
         }
 
-        Task ITDProjectService.RemoveProjectManagerAsync(int projectId)
+        public Task RemoveProjectManagerAsync(int projectId)
         {
             throw new System.NotImplementedException();
         }
 
-        Task ITDProjectService.RemoveUserFromProjectAsync(string userId, int projectId)
+        public Task RemoveUserFromProjectAsync(string userId, int projectId)
         {
             throw new System.NotImplementedException();
         }
 
-        Task ITDProjectService.RemoveUsersFromProjectByRoleAsync(string role, int projectId)
+        public Task RemoveUsersFromProjectByRoleAsync(string role, int projectId)
         {
             throw new System.NotImplementedException();
         }
 
-        Task ITDProjectService.UpdateProjectAsync(Project project)
+        public Task UpdateProjectAsync(Project project)
         {
             throw new System.NotImplementedException();
         }
     }
+
 }

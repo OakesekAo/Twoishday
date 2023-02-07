@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Twoishday.Data;
 using Twoishday.Models;
@@ -151,9 +152,44 @@ namespace Twoishday.Services
             throw new System.NotImplementedException();
         }
 
-        public Task<List<Project>> GetUserProjectsAsync(string userId)
+        public async Task<List<Project>> GetUserProjectsAsync(string userId)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                List<Project> userProjects = (await _context.Users
+                    .Include(u=>u.Projects)
+                        .ThenInclude(p => p.Company)
+                    .Include(u => u.Projects)
+                        .ThenInclude(p => p.Members)
+                    .Include(u => u.Projects)
+                        .ThenInclude(t => t.Tickets)
+                    .Include(u => u.Projects)
+                        .ThenInclude(t => t.Tickets)
+                            .ThenInclude(t => t.DeveloperUser)
+                    .Include(u => u.Projects)
+                        .ThenInclude(t => t.Tickets)
+                            .ThenInclude(t => t.OwnerUser)
+                    .Include(u => u.Projects)
+                        .ThenInclude(t => t.Tickets)
+                            .ThenInclude(t => t.TicketPriority)
+                    .Include(u => u.Projects)
+                        .ThenInclude(t => t.Tickets)
+                            .ThenInclude(t => t.TicketStatus)
+                    .Include(u => u.Projects)
+                        .ThenInclude(t => t.Tickets)
+                            .ThenInclude(t => t.TicketType)
+                    .FirstOrDefaultAsync(u => u.Id == userId)).Projects.ToList();
+
+                return userProjects;
+
+
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine($"*********** ERROR ************ - Error Getting User from project. --->{ex.Message}");
+
+            }
         }
 
         public Task<List<TDUser>> GetUsersNotOnProjectAsync(int projectId, int companyId)
@@ -210,7 +246,7 @@ namespace Twoishday.Services
             catch (Exception ex)
             {
                 Console.WriteLine($"*********** ERROR ************ - Error Removing User from project. --->{ex.Message}");
-                
+
             }
         }
 

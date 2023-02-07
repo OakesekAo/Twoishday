@@ -280,6 +280,7 @@ namespace Twoishday.Services
                     }
                     catch(Exception ex)
                     {
+                        //maybe switch this to email service sending
                         Console.WriteLine($"*********** ERROR ************ - Error Removing User from project. --->{ex.Message}");
                         throw;
                     }

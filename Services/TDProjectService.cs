@@ -13,10 +13,12 @@ namespace Twoishday.Services
     public class TDProjectService : ITDProjectService
     {
         private readonly ApplicationDbContext _context;
+        private readonly ITDRolesService _rolesService;
 
-        public TDProjectService(ApplicationDbContext context)
+        public TDProjectService(ApplicationDbContext context, ITDRolesService roleService)
         {
             _context = context;
+            _rolesService = roleService;
         }
 
         // CRUD Create
@@ -142,9 +144,21 @@ namespace Twoishday.Services
             throw new System.NotImplementedException();
         }
 
-        public Task<List<TDUser>> GetProjectMembersByRoleAsync(int projectId, string role)
+        public async Task<List<TDUser>> GetProjectMembersByRoleAsync(int projectId, string role)
         {
-            throw new System.NotImplementedException();
+            Project project = await _context.Projects
+                                            .Include(p => p.Members)
+                                            .FirstOrDefaultAsync(p => p.Id == projectId);
+            List<TDUser> members = new();
+
+            foreach (var user in project.Members)
+            {
+                if (await _rolesService.IsUserInRoleAsync(user, role))
+                {
+                    members.Add(user);
+                }
+            }
+            return members;
         }
 
         public Task<List<TDUser>> GetSubmittersOnProjectAsync(int projectId)
@@ -157,7 +171,7 @@ namespace Twoishday.Services
             try
             {
                 List<Project> userProjects = (await _context.Users
-                    .Include(u=>u.Projects)
+                    .Include(u => u.Projects)
                         .ThenInclude(p => p.Company)
                     .Include(u => u.Projects)
                         .ThenInclude(p => p.Members)
@@ -250,9 +264,31 @@ namespace Twoishday.Services
             }
         }
 
-        public Task RemoveUsersFromProjectByRoleAsync(string role, int projectId)
+        public async Task RemoveUsersFromProjectByRoleAsync(string role, int projectId)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                List<TDUser> members = await GetProjectMembersByRoleAsync(projectId, role);
+                Project project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == projectId);
+
+                foreach (TDUser tDUser in members)
+                {
+                    try
+                    {
+                        project.Members.Remove(tDUser);
+                        await _context.SaveChangesAsync();
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine($"*********** ERROR ************ - Error Removing User from project. --->{ex.Message}");
+                        throw;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         //CRUD Update

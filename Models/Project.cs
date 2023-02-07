@@ -14,7 +14,7 @@ namespace Twoishday.Models
 
         [Required]
         [DisplayName("Company")]
-        public int? CompanyId { get; set; }
+        public int CompanyId { get; set; }
 
         [Required]
         [StringLength(50)]

@@ -3,9 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 using Twoishday.Data;
 using Twoishday.Models;
+using Twoishday.Models.Enums;
 using Twoishday.Services.Interfaces;
 
 namespace Twoishday.Services
@@ -72,9 +74,15 @@ namespace Twoishday.Services
             await _context.SaveChangesAsync();
         }
 
-        public Task<List<TDUser>> GetAllProjectMembersExceptPMAsync(int projectId)
+        public async Task<List<TDUser>> GetAllProjectMembersExceptPMAsync(int projectId)
         {
-            throw new System.NotImplementedException();
+            List<TDUser> developers = await GetProjectMembersByRoleAsync(projectId, Roles.Developer.ToString());
+            List<TDUser> submitters = await GetProjectMembersByRoleAsync(projectId, Roles.Submitter.ToString());
+            List<TDUser> admins = await GetProjectMembersByRoleAsync(projectId, Roles.Admin.ToString());
+
+            List<TDUser> teamMembers = developers.Concat(submitters).Concat(admins).ToList();
+
+            return teamMembers;
         }
 
         public async Task<List<Project>> GetAllProjectsByCompany(int companyId)

@@ -30,9 +30,33 @@ namespace Twoishday.Services
             await _context.SaveChangesAsync();
         }
 
-        public Task<bool> AddProjectManagerAsync(string userId, int projectId)
+        public async Task<bool> AddProjectManagerAsync(string userId, int projectId)
         {
-            throw new System.NotImplementedException();
+            TDUser currentPM = await GetProjectManagerAsync(projectId);
+            if (currentPM != null)
+            {
+                try
+                {
+                    await RemoveProjectManagerAsync(projectId);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error removing current PM - Error: {ex.Message}");
+                    return false;
+                }
+            }
+
+            //add new PM
+            try
+            {
+                await AddProjectManagerAsync(userId, projectId);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error adding new PM - Error: {ex.Message}");
+                return false;
+            }
         }
 
         public async Task<bool> AddUserToProjectAsync(string userId, int projectId)
@@ -147,9 +171,20 @@ namespace Twoishday.Services
             return project;
         }
 
-        public Task<TDUser> GetProjectManagerAsync(int projectId)
+        public async Task<TDUser> GetProjectManagerAsync(int projectId)
         {
-            throw new System.NotImplementedException();
+            Project project = await _context.Projects
+                                            .Include(p => p.Members)
+                                            .FirstOrDefaultAsync(p => p.Id == projectId);
+
+            foreach (TDUser member in project?.Members)
+            {
+                if (await _rolesService.IsUserInRoleAsync(member, Roles.ProjectManager.ToString()))
+                {
+                    return member;
+                }
+            }
+            return null;
         }
 
         public async Task<List<TDUser>> GetProjectMembersByRoleAsync(int projectId, string role)
@@ -210,13 +245,17 @@ namespace Twoishday.Services
             {
 
                 Console.WriteLine($"*********** ERROR ************ - Error Getting User from project. --->{ex.Message}");
-
+                throw;
             }
         }
 
-        public Task<List<TDUser>> GetUsersNotOnProjectAsync(int projectId, int companyId)
+        public async Task<List<TDUser>> GetUsersNotOnProjectAsync(int projectId, int companyId)
         {
-            throw new System.NotImplementedException();
+            List<TDUser> users = await _context.Users.Where(u => u.Projects.All(p => p.Id != projectId)).ToListAsync();
+
+
+
+            return users.Where(u => u.CompanyId == companyId).ToList();
         }
 
         public async Task<bool> IsUserOnProjectAsync(string userId, int projectId)
@@ -239,9 +278,28 @@ namespace Twoishday.Services
 
         }
 
-        public Task RemoveProjectManagerAsync(int projectId)
+        public async Task RemoveProjectManagerAsync(int projectId)
         {
-            throw new System.NotImplementedException();
+            Project project = await _context.Projects
+                .Include(p => p.Members)
+                .FirstOrDefaultAsync(p => p.Id == projectId);
+
+            try
+            {
+                foreach(TDUser member in project?.Members)
+                {
+                    if(await _rolesService.IsUserInRoleAsync(member, Roles.ProjectManager.ToString()))
+                    {
+                        await RemoveUserFromProjectAsync(member.Id, projectId);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
         }
 
         public async Task RemoveUserFromProjectAsync(string userId, int projectId)
@@ -286,7 +344,7 @@ namespace Twoishday.Services
                         project.Members.Remove(tDUser);
                         await _context.SaveChangesAsync();
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         //maybe switch this to email service sending
                         Console.WriteLine($"*********** ERROR ************ - Error Removing User from project. --->{ex.Message}");

@@ -199,9 +199,20 @@ namespace Twoishday.Services
             return await _context.Tickets.FirstOrDefaultAsync(t => t.Id == ticketId);
         }
 
-        public Task<TDUser> GetTicketDeveloperAsync(int ticketId)
+        public async Task<TDUser> GetTicketDeveloperAsync(int ticketId, int companyId)
         {
-            throw new System.NotImplementedException();
+            TDUser developer = new();
+            try
+            {
+                Ticket ticket = (await GetAllTicketsByCompanyAsync(companyId)).FirstOrDefault(t=>t.Id == ticketId);
+
+                if(ticket?)
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         public async Task<List<Ticket>> GetTicketsByRoleAsync(string role, string userId, int companyId)

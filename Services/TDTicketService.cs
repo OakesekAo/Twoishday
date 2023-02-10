@@ -25,7 +25,6 @@ namespace Twoishday.Services
             _roleService = roleService;
             _projectService = projectService;
         }
-
         public async Task AddNewTicketAsync(Ticket ticket)
         {
             try

@@ -43,6 +43,8 @@ namespace Twoishday
             //Register services here
             services.AddScoped<ITDRolesService, TDRoleService>();
             services.AddScoped<ITDCompanyInfoService, TDCompanyInfoService>();
+            services.AddScoped<ITDProjectService, TDProjectService>();
+            services.AddScoped<ITDTicketService, TDTicketService>();
 
             services.AddControllersWithViews();
         }

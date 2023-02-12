@@ -45,6 +45,7 @@ namespace Twoishday
             services.AddScoped<ITDCompanyInfoService, TDCompanyInfoService>();
             services.AddScoped<ITDProjectService, TDProjectService>();
             services.AddScoped<ITDTicketService, TDTicketService>();
+            services.AddScoped<ITDTicketHistoryService, TDTicketHistoryService>();
 
             services.AddControllersWithViews();
         }

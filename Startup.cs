@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,7 +38,7 @@ namespace Twoishday
 
             services.AddIdentity<TDUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultUI()
+                .AddDefaultUI() 
                 .AddDefaultTokenProviders();
 
             //Register services here
@@ -46,6 +47,9 @@ namespace Twoishday
             services.AddScoped<ITDProjectService, TDProjectService>();
             services.AddScoped<ITDTicketService, TDTicketService>();
             services.AddScoped<ITDTicketHistoryService, TDTicketHistoryService>();
+
+            services.AddScoped<IEmailSender, TDEmailService>();
+            services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
 
             services.AddControllersWithViews();
         }

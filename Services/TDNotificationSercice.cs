@@ -10,13 +10,13 @@ using Twoishday.Services.Interfaces;
 
 namespace Twoishday.Services
 {
-    public class TDNotification : ITDNotificationService
+    public class TDNotificationSercice : ITDNotificationService
     {
         private readonly ApplicationDbContext _context;
         private readonly IEmailSender _emailSender;
         private readonly ITDRolesService _rolesService;
 
-        public TDNotification(ApplicationDbContext context,
+        public TDNotificationSercice(ApplicationDbContext context,
                                 IEmailSender emailSender,
                                 ITDRolesService rolesService)
         {

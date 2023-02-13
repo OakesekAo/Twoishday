@@ -47,9 +47,11 @@ namespace Twoishday
             services.AddScoped<ITDProjectService, TDProjectService>();
             services.AddScoped<ITDTicketService, TDTicketService>();
             services.AddScoped<ITDTicketHistoryService, TDTicketHistoryService>();
+            services.AddScoped<ITDNotificationService, TDNotificationSercice>();
 
             services.AddScoped<IEmailSender, TDEmailService>();
             services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
+            
 
             services.AddControllersWithViews();
         }

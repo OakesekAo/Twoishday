@@ -54,17 +54,21 @@ namespace Twoishday.Data
         {
             using var svcScope = host.Services.CreateScope();
             var svcProvider = svcScope.ServiceProvider;
+
             //Service: An instance of RoleManager
             var dbContextSvc = svcProvider.GetRequiredService<ApplicationDbContext>();
+
             //Service: An instance of RoleManager
             var roleManagerSvc = svcProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
             //Service: An instance of the UserManager
             var userManagerSvc = svcProvider.GetRequiredService<UserManager<TDUser>>();
+
             //Migration: This is the programmatic equivalent to Update-Database
             await dbContextSvc.Database.MigrateAsync();
 
 
-            //Custom  Bug Tracker Seed Methods
+            // Twoishday Data Seed Methods
             await SeedRolesAsync(roleManagerSvc);
             await SeedDefaultCompaniesAsync(dbContextSvc);
             await SeedDefaultUsersAsync(userManagerSvc);

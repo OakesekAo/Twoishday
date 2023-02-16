@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using Twoishday.Data;
 using Twoishday.Models;
 using Twoishday.Services;
+using Twoishday.Services.Factories;
 using Twoishday.Services.Interfaces;
 
 namespace Twoishday
@@ -39,6 +40,7 @@ namespace Twoishday
 
             services.AddIdentity<TDUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddClaimsPrincipalFactory<TDUserClaimsPrincipalFactory>()
                 .AddDefaultUI() 
                 .AddDefaultTokenProviders();
 

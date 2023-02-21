@@ -13,7 +13,7 @@ namespace Twoishday.Controllers
     {
         private readonly ITDRolesService _roleService;
         private readonly ITDCompanyInfoService _companyInfoService;
-        
+
 
 
         public UserRolesController(ITDRolesService roleService, ITDCompanyInfoService companyInfoService)
@@ -21,6 +21,8 @@ namespace Twoishday.Controllers
             _roleService = roleService;
             _companyInfoService = companyInfoService;
         }
+
+        [HttpGet]
         public async Task<IActionResult> ManageUserRoles()
         {
             // add an instance of the ViewModel as a List (model)
@@ -36,17 +38,20 @@ namespace Twoishday.Controllers
             // - instantiate ViewModel
             // use _roleService
             // create multi-selects
-            foreach(TDUser user in users)
+            foreach (TDUser user in users)
             {
                 ManageUserRolesViewModel viewModel = new();
                 viewModel.TDUser = user;
                 IEnumerable<string> selected = await _roleService.GetUserRolesAsync(user);
-                viewModel.Roles = new MultiSelectList(await _roleService.)
+                viewModel.Roles = new MultiSelectList(await _roleService.GetRoleAsync(), "Name", "Name", selected);
+
+
+                model.Add(viewModel);
             }
 
 
             //retun the view
-            return View();
+            return View(model);
         }
     }
 }

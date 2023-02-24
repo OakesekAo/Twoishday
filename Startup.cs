@@ -53,6 +53,7 @@ namespace Twoishday
             services.AddScoped<ITDNotificationService, TDNotificationSercice>();
             services.AddScoped<ITDInviteService, TDInviteService>();
             services.AddScoped<ITDFileService, TDFileService>();
+            services.AddScoped<ITDLookupService,TDLookupService>();
 
             services.AddScoped<IEmailSender, TDEmailService>();
             services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));

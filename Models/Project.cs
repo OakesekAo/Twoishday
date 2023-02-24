@@ -10,6 +10,7 @@ namespace Twoishday.Models
 {
     public class Project
     {
+        //primary key
         public int Id { get; set; }
 
         [Required]

@@ -2,25 +2,34 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Twoishday.Data;
+using Twoishday.Extensions;
 using Twoishday.Models;
+using Twoishday.Models.Enums;
+using Twoishday.Models.ViewModels;
+using Twoishday.Services.Interfaces;
 
 namespace Twoishday.Controllers
 {
     public class ProjectsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly ITDRolesService _rolesService;
+        private readonly ITDLookupService _lookupService;
 
-        public ProjectsController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+		public ProjectsController(ApplicationDbContext context, ITDRolesService rolesService, ITDLookupService lookupService)
+		{
+			_context = context;
+			_rolesService = rolesService;
+			_lookupService = lookupService;
+		}
 
-        // GET: Projects
-        public async Task<IActionResult> Index()
+		// GET: Projects
+		public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.Projects.Include(p => p.Company).Include(p => p.ProjectPriority);
             return View(await applicationDbContext.ToListAsync());
@@ -47,11 +56,19 @@ namespace Twoishday.Controllers
         }
 
         // GET: Projects/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Id");
-            ViewData["ProjectPriorityId"] = new SelectList(_context.ProjectPriorities, "Id", "Id");
-            return View();
+            int companyId = User.Identity.GetCompanyId().Value;
+
+            //add viewmodel instance
+            AddProjectWithPMViewModel model = new();
+
+			// lead selectLists with data
+			model.PMList = new SelectList(await _rolesService.GetUserInRoleAsync(Roles.ProjectManager.ToString(), companyId), "Id", "FullName");
+			model.PriorityList = new SelectList(await _lookupService.GetProjectPrioritiesAsync(), "Id", "FullName");
+
+
+            return View(model);
         }
 
         // POST: Projects/Create

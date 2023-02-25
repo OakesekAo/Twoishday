@@ -44,6 +44,7 @@ namespace Twoishday.Models
         [DisplayName("File Name")]
         public string ImageFileName { get; set; }
 
+        //imagefiledata
         public byte[] ImageFileDate { get; set; }
 
         [DisplayName("File Extension")]

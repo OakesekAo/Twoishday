@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -20,16 +19,21 @@ namespace Twoishday.Controllers
         private readonly ApplicationDbContext _context;
         private readonly ITDRolesService _rolesService;
         private readonly ITDLookupService _lookupService;
+        private readonly ITDFileService _fileService;
+        private readonly ITDProjectService _projectService;
 
-		public ProjectsController(ApplicationDbContext context, ITDRolesService rolesService, ITDLookupService lookupService)
-		{
-			_context = context;
-			_rolesService = rolesService;
-			_lookupService = lookupService;
-		}
 
-		// GET: Projects
-		public async Task<IActionResult> Index()
+        public ProjectsController(ApplicationDbContext context, ITDRolesService rolesService, ITDLookupService lookupService, ITDFileService fileService, ITDProjectService projectService)
+        {
+            _context = context;
+            _rolesService = rolesService;
+            _lookupService = lookupService;
+            _fileService = fileService;
+            _projectService = projectService;
+        }
+
+        // GET: Projects
+        public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.Projects.Include(p => p.Company).Include(p => p.ProjectPriority);
             return View(await applicationDbContext.ToListAsync());
@@ -58,14 +62,14 @@ namespace Twoishday.Controllers
         // GET: Projects/Create
         public async Task<IActionResult> Create()
         {
-            int companyId = User.Identity.GetCompanyId().Value;
+            int companyId = User.Identity!.GetCompanyId()!.Value;
 
             //add viewmodel instance
             AddProjectWithPMViewModel model = new();
 
 			// lead selectLists with data
 			model.PMList = new SelectList(await _rolesService.GetUserInRoleAsync(Roles.ProjectManager.ToString(), companyId), "Id", "FullName");
-			model.PriorityList = new SelectList(await _lookupService.GetProjectPrioritiesAsync(), "Id", "FullName");
+			model.PriorityList = new SelectList(await _lookupService.GetProjectPrioritiesAsync(), "Id", "Name");
 
 
             return View(model);
@@ -76,17 +80,43 @@ namespace Twoishday.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,CompanyId,Name,Description,StartDate,EndDate,ProjectPriorityId,ImageFileName,ImageFileDate,ImageContentType,Archived")] Project project)
+        public async Task<IActionResult> Create(AddProjectWithPMViewModel model)
         {
-            if (ModelState.IsValid)
+            if(model != null)
             {
-                _context.Add(project);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                int companyId = User.Identity!.GetCompanyId()!.Value;
+
+                try
+                {
+                    if(model.Project.ImageFormFile != null)
+                    {
+                        model.Project.ImageFileData = await _fileService.ConvertFileToByteArrayAsync(model.Project.ImageFormFile);
+                        model.Project.ImageFileName = model.Project.ImageFormFile.FileName;
+                        model.Project.ImageContentType = model.Project.ImageFormFile.ContentType;
+                    }
+
+                    model.Project.CompanyId = companyId;
+
+                    await _projectService.AddNewProjectAsync(model.Project);
+
+                    //add PM if one was chosen
+                    if (!string.IsNullOrEmpty(model.PmId))
+                    {
+                        await _projectService.AddProjectManagerAsync(model.PmId, model.Project.Id);
+                    }
+
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+
+                //TODO: redirect to all projects
+                return RedirectToAction("Index");
             }
-            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Id", project.CompanyId);
-            ViewData["ProjectPriorityId"] = new SelectList(_context.ProjectPriorities, "Id", "Id", project.ProjectPriorityId);
-            return View(project);
+
+            return RedirectToAction("Create");
         }
 
         // GET: Projects/Edit/5
@@ -112,7 +142,7 @@ namespace Twoishday.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,CompanyId,Name,Description,StartDate,EndDate,ProjectPriorityId,ImageFileName,ImageFileDate,ImageContentType,Archived")] Project project)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,CompanyId,Name,Description,StartDate,EndDate,ProjectPriorityId,ImageFileName,ImageFileData,ImageContentType,Archived")] Project project)
         {
             if (id != project.Id)
             {

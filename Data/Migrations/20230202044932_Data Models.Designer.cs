@@ -303,7 +303,7 @@ namespace Twoishday.Data.Migrations
                     b.Property<string>("ImageContentType")
                         .HasColumnType("text");
 
-                    b.Property<byte[]>("ImageFileDate")
+                    b.Property<byte[]>("ImageFileData")
                         .HasColumnType("bytea");
 
                     b.Property<string>("ImageFileName")

@@ -111,7 +111,7 @@ namespace Twoishday.Data.Migrations
                     EndDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     ProjectPriorityId = table.Column<int>(type: "integer", nullable: true),
                     ImageFileName = table.Column<string>(type: "text", nullable: true),
-                    ImageFileDate = table.Column<byte[]>(type: "bytea", nullable: true),
+                    ImageFileData = table.Column<byte[]>(type: "bytea", nullable: true),
                     ImageContentType = table.Column<string>(type: "text", nullable: true),
                     Archived = table.Column<bool>(type: "boolean", nullable: false)
                 },

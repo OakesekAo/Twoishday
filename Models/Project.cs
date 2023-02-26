@@ -19,7 +19,7 @@ namespace Twoishday.Models
 
         [Required]
         [StringLength(50)]
-        [DisplayName("Name")]
+        [DisplayName("Project Name")]
         public string Name { get; set; }
 
 
@@ -28,10 +28,12 @@ namespace Twoishday.Models
 
         
         [DisplayName("Start Date")]
+        [DataType(DataType.Date)]
         public DateTimeOffset StartDate { get; set; }
 
         
         [DisplayName("End Date")]
+        [DataType(DataType.Date)]
         public DateTimeOffset? EndDate { get; set; }
 
         [DisplayName("Priority")]
@@ -39,13 +41,13 @@ namespace Twoishday.Models
 
         [NotMapped]
         [DataType(DataType.Upload)]
-        public IFormFile IamgeFormFile { get; set; }
+        public IFormFile ImageFormFile { get; set; }
 
         [DisplayName("File Name")]
         public string ImageFileName { get; set; }
 
         //imagefiledata
-        public byte[] ImageFileDate { get; set; }
+        public byte[] ImageFileData { get; set; }
 
         [DisplayName("File Extension")]
         public string ImageContentType { get; set; }

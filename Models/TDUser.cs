@@ -35,7 +35,7 @@ namespace Twoishday.Models
         public string AvatarContentType { get; set; }
 
         [DisplayName("Company")]
-        public int? CompanyId { get; set; }
+        public int CompanyId { get; set; }
 
         //Navigation Properites 
         public virtual Company Company { get; set; }

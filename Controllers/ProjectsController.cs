@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -21,15 +22,17 @@ namespace Twoishday.Controllers
         private readonly ITDLookupService _lookupService;
         private readonly ITDFileService _fileService;
         private readonly ITDProjectService _projectService;
+        private readonly UserManager<TDUser> _userManager;
 
 
-        public ProjectsController(ApplicationDbContext context, ITDRolesService rolesService, ITDLookupService lookupService, ITDFileService fileService, ITDProjectService projectService)
+        public ProjectsController(ApplicationDbContext context, ITDRolesService rolesService, ITDLookupService lookupService, ITDFileService fileService, ITDProjectService projectService, UserManager<TDUser> userManager)
         {
             _context = context;
             _rolesService = rolesService;
             _lookupService = lookupService;
             _fileService = fileService;
             _projectService = projectService;
+            _userManager = userManager;
         }
 
         // GET: Projects
@@ -38,6 +41,17 @@ namespace Twoishday.Controllers
             var applicationDbContext = _context.Projects.Include(p => p.Company).Include(p => p.ProjectPriority);
             return View(await applicationDbContext.ToListAsync());
         }
+
+        // GET: MyProjects
+        public async Task<IActionResult> MyProjects()
+        {
+            string userId = _userManager.GetUserId(User);
+
+            List<Project> projects = await _projectService.GetUserProjectsAsync(userId);
+
+            return View(projects);
+        }
+
 
         // GET: Projects/Details/5
         public async Task<IActionResult> Details(int? id)

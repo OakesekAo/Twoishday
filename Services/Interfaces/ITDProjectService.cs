@@ -16,7 +16,7 @@ namespace Twoishday.Services.Interfaces
 
         public Task ArchiveProjectAsync(Project project);
 
-        public Task<List<Project>> GetAllProjectsByCompany(int companyId);
+        public Task<List<Project>> GetAllProjectsByCompanyAsync(int companyId);
 
         public Task<List<Project>> GetAllProjectsByPriority(int companyId, string priorityName);
 

@@ -22,10 +22,11 @@ namespace Twoishday.Controllers
         private readonly ITDLookupService _lookupService;
         private readonly ITDFileService _fileService;
         private readonly ITDProjectService _projectService;
+        private readonly ITDCompanyInfoService _companyInfoService;
         private readonly UserManager<TDUser> _userManager;
 
 
-        public ProjectsController(ApplicationDbContext context, ITDRolesService rolesService, ITDLookupService lookupService, ITDFileService fileService, ITDProjectService projectService, UserManager<TDUser> userManager)
+        public ProjectsController(ApplicationDbContext context, ITDRolesService rolesService, ITDLookupService lookupService, ITDFileService fileService, ITDProjectService projectService, UserManager<TDUser> userManager, ITDCompanyInfoService companyInfoService)
         {
             _context = context;
             _rolesService = rolesService;
@@ -33,6 +34,7 @@ namespace Twoishday.Controllers
             _fileService = fileService;
             _projectService = projectService;
             _userManager = userManager;
+            _companyInfoService = companyInfoService;
         }
 
         // GET: Projects
@@ -48,6 +50,26 @@ namespace Twoishday.Controllers
             string userId = _userManager.GetUserId(User);
 
             List<Project> projects = await _projectService.GetUserProjectsAsync(userId);
+
+            return View(projects);
+        }
+
+        // GET: MyProjects
+        public async Task<IActionResult> AllProjects()
+        {
+
+            List<Project> projects = new();
+
+            int companyId = User.Identity.GetCompanyId().Value;
+
+            if(User.IsInRole(nameof(Roles.Admin)) || User.IsInRole(nameof(Roles.ProjectManager)))
+            {
+                projects = await _companyInfoService.GetAllProjectsAsync(companyId);
+            }
+            else
+            {
+                projects = await _projectService.GetAllProjectsByCompanyAsync(companyId);
+            }
 
             return View(projects);
         }

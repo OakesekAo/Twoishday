@@ -342,18 +342,18 @@ namespace Twoishday.Services
             {
                 if (await _roleService.IsUserInRoleAsync(tdUser, Roles.Admin.ToString()))
                 {
-                    tickets = (await _projectService.GetAllProjectsByCompany(companyId)).SelectMany(p => p.Tickets).ToList();
+                    tickets = (await _projectService.GetAllProjectsByCompanyAsync(companyId)).SelectMany(p => p.Tickets).ToList();
                 }
                 else if (await _roleService.IsUserInRoleAsync(tdUser, Roles.Developer.ToString()))
                 {
-                    tickets = (await _projectService.GetAllProjectsByCompany(companyId))
+                    tickets = (await _projectService.GetAllProjectsByCompanyAsync(companyId))
                                                     .SelectMany(p => p.Tickets)
                                                     .Where(t => t.DeveloperUserId == userId)
                                                     .ToList();
                 }
                 else if (await _roleService.IsUserInRoleAsync(tdUser, Roles.Submitter.ToString()))
                 {
-                    tickets = (await _projectService.GetAllProjectsByCompany(companyId))
+                    tickets = (await _projectService.GetAllProjectsByCompanyAsync(companyId))
                                                     .SelectMany(p => p.Tickets)
                                                     .Where(t => t.OwnderUserId == userId)
                                                     .ToList();

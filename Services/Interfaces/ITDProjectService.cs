@@ -22,7 +22,7 @@ namespace Twoishday.Services.Interfaces
 
         public Task<List<TDUser>> GetAllProjectMembersExceptPMAsync(int projectId);
 
-        public Task<List<Project>> GetArchivedProjectsByCompany(int companyId);
+        public Task<List<Project>> GetArchivedProjectsByCompanyAsync(int companyId);
 
         public Task<List<TDUser>> GetDevelopersOnProjectAsync(int projectId);
 

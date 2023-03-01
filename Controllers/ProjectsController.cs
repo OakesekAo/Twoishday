@@ -54,7 +54,7 @@ namespace Twoishday.Controllers
             return View(projects);
         }
 
-        // GET: MyProjects
+        // GET: AllProjects
         public async Task<IActionResult> AllProjects()
         {
 
@@ -70,6 +70,17 @@ namespace Twoishday.Controllers
             {
                 projects = await _projectService.GetAllProjectsByCompanyAsync(companyId);
             }
+
+            return View(projects);
+        }
+
+        // GET: ArchivedProjects
+        public async Task<IActionResult> ArchivedProjects()
+        {
+
+            int companyId = User.Identity.GetCompanyId().Value;
+
+            List<Project> projects = await _projectService.GetArchivedProjectsByCompanyAsync(companyId);
 
             return View(projects);
         }

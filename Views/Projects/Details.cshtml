@@ -1,7 +1,19 @@
 ﻿@model Twoishday.Models.Project
+@using Twoishday.Models.Enums
+@using Twoishday.Services.Interfaces
+@using Microsoft.AspNetCore.Identity
+
+@inject UserManager<TDUser> UserManager
+@inject ITDProjectService ProjectService
+@inject ITDTicketHistoryService HistoryService
+
 
 @{
     ViewData["Title"] = "Details";
+
+    TDUser tDUser = await UserManager.GetUserAsync(User);
+    TDUser projectManager = await ProjectService.GetProjectManagerAsync();
+
 }
 
 <h1>Details</h1>

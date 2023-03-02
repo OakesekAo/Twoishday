@@ -30,7 +30,7 @@ namespace Twoishday.Services
 			}
 		}
 
-		public async Task<List<TicketPriority>> GetTicketPrioritiesAsync()
+		public Task<List<TicketPriority>> GetTicketPrioritiesAsync()
 		{
 
             throw new System.NotImplementedException();

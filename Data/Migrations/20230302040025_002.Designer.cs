@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Twoishday.Data;
 
-namespace Twoishday.Data.Migrations
+namespace Twoishday.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230202044932_Data Models")]
-    partial class DataModels
+    [Migration("20230302040025_002")]
+    partial class _002
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -290,8 +290,7 @@ namespace Twoishday.Data.Migrations
                     b.Property<bool>("Archived")
                         .HasColumnType("boolean");
 
-                    b.Property<int?>("CompanyId")
-                        .IsRequired()
+                    b.Property<int>("CompanyId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Description")
@@ -361,7 +360,7 @@ namespace Twoishday.Data.Migrations
                     b.Property<string>("AvatarFileName")
                         .HasColumnType("text");
 
-                    b.Property<int?>("CompanyId")
+                    b.Property<int>("CompanyId")
                         .HasColumnType("integer");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -440,6 +439,9 @@ namespace Twoishday.Data.Migrations
                     b.Property<bool>("Archived")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("ArchivedByProject")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("timestamp with time zone");
 
@@ -448,9 +450,6 @@ namespace Twoishday.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("DeveloperUserId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("OwnderUserId")
                         .HasColumnType("text");
 
                     b.Property<string>("OwnerUserId")
@@ -709,7 +708,7 @@ namespace Twoishday.Data.Migrations
             modelBuilder.Entity("Twoishday.Models.Invite", b =>
                 {
                     b.HasOne("Twoishday.Models.Company", "Company")
-                        .WithMany()
+                        .WithMany("Invites")
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -785,7 +784,9 @@ namespace Twoishday.Data.Migrations
                 {
                     b.HasOne("Twoishday.Models.Company", "Company")
                         .WithMany("Members")
-                        .HasForeignKey("CompanyId");
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Company");
                 });
@@ -890,6 +891,8 @@ namespace Twoishday.Data.Migrations
 
             modelBuilder.Entity("Twoishday.Models.Company", b =>
                 {
+                    b.Navigation("Invites");
+
                     b.Navigation("Members");
 
                     b.Navigation("Projects");

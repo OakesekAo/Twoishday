@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Twoishday.Data;
 
-namespace Twoishday.Data.Migrations
+namespace Twoishday.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230227033734_004")]
-    partial class _004
+    [Migration("20230302035905_001")]
+    partial class _001
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -360,7 +360,7 @@ namespace Twoishday.Data.Migrations
                     b.Property<string>("AvatarFileName")
                         .HasColumnType("text");
 
-                    b.Property<int?>("CompanyId")
+                    b.Property<int>("CompanyId")
                         .HasColumnType("integer");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -450,9 +450,6 @@ namespace Twoishday.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("DeveloperUserId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("OwnderUserId")
                         .HasColumnType("text");
 
                     b.Property<string>("OwnerUserId")
@@ -787,7 +784,9 @@ namespace Twoishday.Data.Migrations
                 {
                     b.HasOne("Twoishday.Models.Company", "Company")
                         .WithMany("Members")
-                        .HasForeignKey("CompanyId");
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Company");
                 });

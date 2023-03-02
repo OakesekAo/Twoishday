@@ -317,7 +317,7 @@ namespace Twoishday.Services
                 }
                 else if (role == Roles.Submitter.ToString())
                 {
-                    tickets = (await GetAllTicketsByCompanyAsync(companyId)).Where(t => t.OwnderUserId == userId).ToList();
+                    tickets = (await GetAllTicketsByCompanyAsync(companyId)).Where(t => t.OwnerUserId == userId).ToList();
                 }
                 else if (role == Roles.ProjectManager.ToString())
                 {
@@ -355,7 +355,7 @@ namespace Twoishday.Services
                 {
                     tickets = (await _projectService.GetAllProjectsByCompanyAsync(companyId))
                                                     .SelectMany(p => p.Tickets)
-                                                    .Where(t => t.OwnderUserId == userId)
+                                                    .Where(t => t.OwnerUserId == userId)
                                                     .ToList();
 
                 }

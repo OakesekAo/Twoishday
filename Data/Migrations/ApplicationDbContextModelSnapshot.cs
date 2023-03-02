@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Twoishday.Data;
 
-namespace Twoishday.Data.Migrations
+namespace Twoishday.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -448,9 +448,6 @@ namespace Twoishday.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("DeveloperUserId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("OwnderUserId")
                         .HasColumnType("text");
 
                     b.Property<string>("OwnerUserId")

@@ -277,7 +277,13 @@ namespace Twoishday.Services
 
         public async Task<Ticket> GetTicketByIdAsync(int ticketId)
         {
-            return await _context.Tickets.FirstOrDefaultAsync(t => t.Id == ticketId);
+            return await _context.Tickets
+                                .Include(t => t.DeveloperUser)
+                                .Include(t => t.Project)
+                                .Include(t => t.TicketPriority)
+                                .Include(t => t.TicketStatus)
+                                .Include(t => t.TicketType)
+                                .FirstOrDefaultAsync(t => t.Id == ticketId);
         }
 
         public async Task<TDUser> GetTicketDeveloperAsync(int ticketId, int companyId)

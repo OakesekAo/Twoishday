@@ -30,20 +30,43 @@ namespace Twoishday.Services
 			}
 		}
 
-		public Task<List<TicketPriority>> GetTicketPrioritiesAsync()
-		{
+		public async Task<List<TicketPriority>> GetTicketPrioritiesAsync()
+        {
+            try
+            {
+                return await _context.TicketPriorities.ToListAsync();
+            }
+            catch (System.Exception)
+            {
 
-            throw new System.NotImplementedException();
+                throw;
+            }
         }
 
-		public Task<List<TicketStatus>> GetTicketStatusesAsync()
-		{
-			throw new System.NotImplementedException();
-		}
+		public async Task<List<TicketStatus>> GetTicketStatusesAsync()
+        {
+            try
+            {
+                return await _context.TicketStatuses.ToListAsync();
+            }
+            catch (System.Exception)
+            {
 
-		public Task<List<TicketType>> GetTicketTypesAsync()
-		{
-			throw new System.NotImplementedException();
-		}
+                throw;
+            }
+        }
+
+		public async Task<List<TicketType>> GetTicketTypesAsync()
+        {
+            try
+            {
+                return await _context.TicketTypes.ToListAsync();
+            }
+            catch (System.Exception)
+            {
+
+                throw;
+            }
+        }
 	}
 }

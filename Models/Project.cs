@@ -34,7 +34,7 @@ namespace Twoishday.Models
         
         [DisplayName("End Date")]
         [DataType(DataType.Date)]
-        public DateTimeOffset? EndDate { get; set; }
+        public DateTimeOffset EndDate { get; set; }
 
         [DisplayName("Priority")]
         public int? ProjectPriorityId { get; set; }

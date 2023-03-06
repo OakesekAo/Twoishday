@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -11,6 +12,7 @@ using Twoishday.Data;
 using Twoishday.Extensions;
 using Twoishday.Models;
 using Twoishday.Models.Enums;
+using Twoishday.Services;
 using Twoishday.Services.Interfaces;
 
 namespace Twoishday.Controllers
@@ -22,18 +24,20 @@ namespace Twoishday.Controllers
         private readonly ITDProjectService _projectSeervice;
         private readonly ITDLookupService _lookupService;
         private readonly ITDTicketService _ticketService;
+        private readonly ITDFileService _fileService;
 
-        public TicketsController(ApplicationDbContext context, UserManager<TDUser> userManager, ITDProjectService projectSeervice, ITDLookupService lookupService, ITDTicketService ticketService)
-        {
-            _context = context;
-            _userManager = userManager;
-            _projectSeervice = projectSeervice;
-            _lookupService = lookupService;
-            _ticketService = ticketService;
-        }
+		public TicketsController(ApplicationDbContext context, UserManager<TDUser> userManager, ITDProjectService projectSeervice, ITDLookupService lookupService, ITDTicketService ticketService, ITDFileService fileService)
+		{
+			_context = context;
+			_userManager = userManager;
+			_projectSeervice = projectSeervice;
+			_lookupService = lookupService;
+			_ticketService = ticketService;
+			_fileService = fileService;
+		}
 
-        // GET: Tickets
-        public async Task<IActionResult> Index()
+		// GET: Tickets
+		public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.Tickets.Include(t => t.DeveloperUser).Include(t => t.Project).Include(t => t.TicketPriority).Include(t => t.TicketStatus).Include(t => t.TicketType);
             return View(await applicationDbContext.ToListAsync());
@@ -222,6 +226,7 @@ namespace Twoishday.Controllers
         }
 
 
+        // POST: Add comments
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddTicketComment([Bind("Id,TicketId,Comment")] TicketComment ticketComment)
@@ -245,8 +250,49 @@ namespace Twoishday.Controllers
             return RedirectToAction("Details", new {id = ticketComment.TicketId});
         }
 
-        // GET: Tickets/Archive/5
-        public async Task<IActionResult> Archive(int? id)
+		// POST: Add attachments
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> AddTicketAttachment([Bind("Id,FormFile,Description,TicketId")] TicketAttachment ticketAttachment)
+		{
+			string statusMessage;
+
+			if (ModelState.IsValid && ticketAttachment.FormFile != null)
+            {
+				ticketAttachment.FileDate = await _fileService.ConvertFileToByteArrayAsync(ticketAttachment.FormFile);
+				ticketAttachment.FileName = ticketAttachment.FormFile.FileName;
+				ticketAttachment.FileContentType = ticketAttachment.FormFile.ContentType;
+
+				ticketAttachment.Created = DateTimeOffset.Now;
+				ticketAttachment.UserId = _userManager.GetUserId(User);
+
+				await _ticketService.AddTicketAttachmentAsync(ticketAttachment);
+				statusMessage = "Success: New attachment added to Ticket.";
+			}
+			else
+			{
+				statusMessage = "Error: Invalid data.";
+
+			}
+
+			return RedirectToAction("Details", new { id = ticketAttachment.TicketId, message = statusMessage });
+		}
+
+        //GET : download file
+		public async Task<IActionResult> ShowFile(int id)
+		{
+			TicketAttachment ticketAttachment = await _ticketService.GetTicketAttachmentByIdAsync(id);
+			string fileName = ticketAttachment.FileName;
+			byte[] fileData = ticketAttachment.FileDate;
+			string ext = Path.GetExtension(fileName).Replace(".", "");
+
+			Response.Headers.Add("Content-Disposition", $"inline; filename={fileName}");
+			return File(fileData, $"application/{ext}");
+		}
+
+
+		// GET: Tickets/Archive/5
+		public async Task<IActionResult> Archive(int? id)
         {
             if (id == null)
             {

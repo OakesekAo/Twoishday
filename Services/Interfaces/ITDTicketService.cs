@@ -2,6 +2,8 @@
 using System.Threading.Tasks;
 using Twoishday.Models;
 
+
+
 namespace Twoishday.Services.Interfaces
 {
     public interface ITDTicketService
@@ -12,6 +14,8 @@ namespace Twoishday.Services.Interfaces
         public Task<Ticket> GetTicketByIdAsync(int ticketId);
         public Task ArchiveTicketAsync(Ticket ticket);
 
+
+        public Task AddTicketCommentAsync(TicketComment ticketComment);
         public Task AssignTicketAsync(int ticketId, string userId);
         public Task<List<Ticket>> GetArchivedTicketsAsync(int companyId);
         public Task<List<Ticket>> GetAllTicketsByCompanyAsync(int companyId);

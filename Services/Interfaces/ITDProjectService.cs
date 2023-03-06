@@ -38,6 +38,8 @@ namespace Twoishday.Services.Interfaces
 
         public Task<List<Project>> GetUserProjectsAsync(string userId);
 
+        public Task<bool> IsAssignedProjectManagerAsync(string userId, int projectId);
+
         public Task<bool> IsUserOnProjectAsync(string userId, int projectId);
 
         public Task<int> LookupProjectPriorityId(string priorityName);

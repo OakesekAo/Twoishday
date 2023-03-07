@@ -116,8 +116,7 @@ namespace Twoishday.Controllers
             AssignDeveloperViewModel model = new();
 
             model.Ticket = await _ticketService.GetTicketByIdAsync(id);
-            model.Developers = new SelectList(await _projectSeervice.GetProjectMembersByRoleAsync(model.Ticket.ProjectId, nameof(Roles.Developer)),
-                                                "Id", "FullName");
+            model.Developers = new SelectList(await _projectSeervice.GetProjectMembersByRoleAsync(model.Ticket.ProjectId, nameof(Roles.Developer)), "Id", "FullName");
 
             return View(model);
         }

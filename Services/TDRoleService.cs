@@ -58,14 +58,14 @@ namespace Twoishday.Services
             return result;
         }
 
-        public async Task<List<TDUser>> GetUserInRoleAsync(string roleName, int companyId)
+        public async Task<List<TDUser>> GetUsersInRoleAsync(string roleName, int companyId)
         {
             List<TDUser> users = (await _userManager.GetUsersInRoleAsync(roleName)).ToList();
             List<TDUser> result = users.Where(u => u.CompanyId == companyId).ToList();
             return result;
         }
 
-        public async Task<List<TDUser>> GetUserNotInRoleAsync(string roleName, int companyId)
+        public async Task<List<TDUser>> GetUsersNotInRoleAsync(string roleName, int companyId)
         {
             List<string> userIds = (await _userManager.GetUsersInRoleAsync(roleName)).Select(u => u.Id).ToList();
             List<TDUser> roleUsers = _context.Users.Where(u => !userIds.Contains(u.Id)).ToList();

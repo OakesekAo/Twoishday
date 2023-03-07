@@ -85,6 +85,30 @@ namespace Twoishday.Controllers
             return View(projects);
         }
 
+        // GET: Unassignedprojects
+        public async Task<IActionResult> UnassignedProjects()
+        {
+            int companyId = User.Identity.GetCompanyId().Value;
+
+            List<Project> projects = new();
+
+            projects = await _projectService.GetUnassignedProjectsAsync(companyId);
+
+            return View(projects);
+        }
+        
+        // GET: Assign PM
+        public async Task<IActionResult> AssignPM(int projectId)
+        {
+            int companyId = User.Identity.GetCompanyId().Value;
+
+            AssignPMViewModel model = new();
+
+            model.Project = await _projectService.GetProjectByIdAsync(projectId, companyId);
+            model.PMList = new SelectList(await _rolesService.GetUsersInRoleAsync(nameof(Roles.ProjectManager), companyId), "Id", "FullName");
+
+            return View(model);
+        }
 
         // GET: Projects/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -115,7 +139,7 @@ namespace Twoishday.Controllers
             AddProjectWithPMViewModel model = new();
 
 			// lead selectLists with data
-			model.PMList = new SelectList(await _rolesService.GetUserInRoleAsync(Roles.ProjectManager.ToString(), companyId), "Id", "FullName");
+			model.PMList = new SelectList(await _rolesService.GetUsersInRoleAsync(Roles.ProjectManager.ToString(), companyId), "Id", "FullName");
 			model.PriorityList = new SelectList(await _lookupService.GetProjectPrioritiesAsync(), "Id", "Name");
 
 
@@ -178,7 +202,7 @@ namespace Twoishday.Controllers
 
 
             // lead selectLists with data
-            model.PMList = new SelectList(await _rolesService.GetUserInRoleAsync(Roles.ProjectManager.ToString(), companyId), "Id", "FullName");
+            model.PMList = new SelectList(await _rolesService.GetUsersInRoleAsync(Roles.ProjectManager.ToString(), companyId), "Id", "FullName");
             model.PriorityList = new SelectList(await _lookupService.GetProjectPrioritiesAsync(), "Id", "Name");
 
 

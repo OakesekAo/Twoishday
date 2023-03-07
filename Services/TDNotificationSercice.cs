@@ -109,7 +109,7 @@ namespace Twoishday.Services
         {
             try
             {
-                List<TDUser> members = await _rolesService.GetUserInRoleAsync(role, companyId);
+                List<TDUser> members = await _rolesService.GetUsersInRoleAsync(role, companyId);
                 foreach (TDUser tdUser in members)
                 {
                     notification.RecipientId = tdUser.Id;

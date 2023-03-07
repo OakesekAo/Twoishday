@@ -22,9 +22,9 @@ namespace Twoishday.Services.Interfaces
 
         
 
-        public Task<List<TDUser>> GetUserInRoleAsync(string roleName, int companyId);
+        public Task<List<TDUser>> GetUsersInRoleAsync(string roleName, int companyId);
 
-        public Task<List<TDUser>> GetUserNotInRoleAsync(string roleName, int companyId);
+        public Task<List<TDUser>> GetUsersNotInRoleAsync(string roleName, int companyId);
 
         public Task<string> GetRoleNameByIdAsync(string roleId);
 

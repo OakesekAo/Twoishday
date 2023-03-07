@@ -34,6 +34,8 @@ namespace Twoishday.Services.Interfaces
 
         public Task<List<TDUser>> GetSubmittersOnProjectAsync(int projectId);
 
+        public Task<List<Project>> GetUnassignedProjectsAsync(int companyId);
+
         public Task<List<TDUser>> GetUsersNotOnProjectAsync(int projectId, int companyId);
 
         public Task<List<Project>> GetUserProjectsAsync(string userId);

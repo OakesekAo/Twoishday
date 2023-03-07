@@ -4,6 +4,7 @@ using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -12,6 +13,7 @@ using Twoishday.Data;
 using Twoishday.Extensions;
 using Twoishday.Models;
 using Twoishday.Models.Enums;
+using Twoishday.Models.ViewModels;
 using Twoishday.Services;
 using Twoishday.Services.Interfaces;
 
@@ -26,23 +28,23 @@ namespace Twoishday.Controllers
         private readonly ITDTicketService _ticketService;
         private readonly ITDFileService _fileService;
 
-		public TicketsController(ApplicationDbContext context, UserManager<TDUser> userManager, ITDProjectService projectSeervice, ITDLookupService lookupService, ITDTicketService ticketService, ITDFileService fileService)
-		{
-			_context = context;
-			_userManager = userManager;
-			_projectSeervice = projectSeervice;
-			_lookupService = lookupService;
-			_ticketService = ticketService;
-			_fileService = fileService;
-		}
+        public TicketsController(ApplicationDbContext context, UserManager<TDUser> userManager, ITDProjectService projectSeervice, ITDLookupService lookupService, ITDTicketService ticketService, ITDFileService fileService)
+        {
+            _context = context;
+            _userManager = userManager;
+            _projectSeervice = projectSeervice;
+            _lookupService = lookupService;
+            _ticketService = ticketService;
+            _fileService = fileService;
+        }
 
-		// GET: Tickets
-		public async Task<IActionResult> Index()
+        // GET: Tickets
+        public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.Tickets.Include(t => t.DeveloperUser).Include(t => t.Project).Include(t => t.TicketPriority).Include(t => t.TicketStatus).Include(t => t.TicketType);
             return View(await applicationDbContext.ToListAsync());
         }
-        
+
         // GET : user tickets
         public async Task<IActionResult> MyTickets()
         {
@@ -59,7 +61,7 @@ namespace Twoishday.Controllers
 
             List<Ticket> tickets = await _ticketService.GetAllTicketsByCompanyAsync(companyId);
 
-            if(User.IsInRole(nameof(Roles.Developer)) || User.IsInRole(nameof(Roles.Submitter)))
+            if (User.IsInRole(nameof(Roles.Developer)) || User.IsInRole(nameof(Roles.Submitter)))
             {
                 return View(tickets.Where(t => t.Archived == false));
             }
@@ -78,6 +80,61 @@ namespace Twoishday.Controllers
             return View(tickets);
         }
 
+        // GET: unassigned Tickets view
+        [Authorize(Roles = "Admin, ProjectManager")]
+        public async Task<IActionResult> UnassignedTickets()
+        {
+            int companyId = User.Identity.GetCompanyId().Value;
+            string tdUserId = _userManager.GetUserId(User);
+            List<Ticket> tickets = await _ticketService.GetUnassignedTicketsAsync(companyId);
+
+            if (User.IsInRole(nameof(Roles.Admin)))
+            {
+                return View(tickets);
+            }
+            else
+            {
+                List<Ticket> pmTickets = new(0);
+
+                foreach(Ticket ticket in tickets)
+                {
+                    if(await _projectSeervice.IsAssignedProjectManagerAsync(tdUserId, ticket.ProjectId))
+                    {
+                        pmTickets.Add(ticket);
+                    }
+                }
+
+                return View(pmTickets);
+
+            }
+        }
+
+        //GET: Assign developer to ticket
+        [HttpGet]
+        public async Task<IActionResult> AssignDeveloper(int id)
+        {
+            AssignDeveloperViewModel model = new();
+
+            model.Ticket = await _ticketService.GetTicketByIdAsync(id);
+            model.Developers = new SelectList(await _projectSeervice.GetProjectMembersByRoleAsync(model.Ticket.ProjectId, nameof(Roles.Developer)),
+                                                "Id", "FullName");
+
+            return View(model);
+        }
+
+        //POST: Assign developer to ticket
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AssignDeveloper(AssignDeveloperViewModel model)
+        {
+            if(model.DeveloperId != null)
+            {
+                await _ticketService.AssignTicketAsync(model.Ticket.Id, model.DeveloperId);
+            }
+
+            return RedirectToAction(nameof(AssignDeveloper), new { id = model.Ticket.Id });
+        }
+
         // GET: Tickets/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -86,7 +143,7 @@ namespace Twoishday.Controllers
                 return NotFound();
             }
 
-           Ticket ticket = await _ticketService.GetTicketByIdAsync(id.Value);
+            Ticket ticket = await _ticketService.GetTicketByIdAsync(id.Value);
 
             if (ticket == null)
             {
@@ -237,7 +294,7 @@ namespace Twoishday.Controllers
                 {
                     ticketComment.UserId = _userManager.GetUserId(User);
                     ticketComment.Created = DateTimeOffset.Now;
-                    
+
                     await _ticketService.AddTicketCommentAsync(ticketComment);
                 }
                 catch (Exception)
@@ -247,52 +304,52 @@ namespace Twoishday.Controllers
                 }
             }
 
-            return RedirectToAction("Details", new {id = ticketComment.TicketId});
+            return RedirectToAction("Details", new { id = ticketComment.TicketId });
         }
 
-		// POST: Add attachments
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> AddTicketAttachment([Bind("Id,FormFile,Description,TicketId")] TicketAttachment ticketAttachment)
-		{
-			string statusMessage;
+        // POST: Add attachments
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddTicketAttachment([Bind("Id,FormFile,Description,TicketId")] TicketAttachment ticketAttachment)
+        {
+            string statusMessage;
 
-			if (ModelState.IsValid && ticketAttachment.FormFile != null)
+            if (ModelState.IsValid && ticketAttachment.FormFile != null)
             {
-				ticketAttachment.FileDate = await _fileService.ConvertFileToByteArrayAsync(ticketAttachment.FormFile);
-				ticketAttachment.FileName = ticketAttachment.FormFile.FileName;
-				ticketAttachment.FileContentType = ticketAttachment.FormFile.ContentType;
+                ticketAttachment.FileDate = await _fileService.ConvertFileToByteArrayAsync(ticketAttachment.FormFile);
+                ticketAttachment.FileName = ticketAttachment.FormFile.FileName;
+                ticketAttachment.FileContentType = ticketAttachment.FormFile.ContentType;
 
-				ticketAttachment.Created = DateTimeOffset.Now;
-				ticketAttachment.UserId = _userManager.GetUserId(User);
+                ticketAttachment.Created = DateTimeOffset.Now;
+                ticketAttachment.UserId = _userManager.GetUserId(User);
 
-				await _ticketService.AddTicketAttachmentAsync(ticketAttachment);
-				statusMessage = "Success: New attachment added to Ticket.";
-			}
-			else
-			{
-				statusMessage = "Error: Invalid data.";
+                await _ticketService.AddTicketAttachmentAsync(ticketAttachment);
+                statusMessage = "Success: New attachment added to Ticket.";
+            }
+            else
+            {
+                statusMessage = "Error: Invalid data.";
 
-			}
+            }
 
-			return RedirectToAction("Details", new { id = ticketAttachment.TicketId, message = statusMessage });
-		}
+            return RedirectToAction("Details", new { id = ticketAttachment.TicketId, message = statusMessage });
+        }
 
         //GET : download file
-		public async Task<IActionResult> ShowFile(int id)
-		{
-			TicketAttachment ticketAttachment = await _ticketService.GetTicketAttachmentByIdAsync(id);
-			string fileName = ticketAttachment.FileName;
-			byte[] fileData = ticketAttachment.FileDate;
-			string ext = Path.GetExtension(fileName).Replace(".", "");
+        public async Task<IActionResult> ShowFile(int id)
+        {
+            TicketAttachment ticketAttachment = await _ticketService.GetTicketAttachmentByIdAsync(id);
+            string fileName = ticketAttachment.FileName;
+            byte[] fileData = ticketAttachment.FileDate;
+            string ext = Path.GetExtension(fileName).Replace(".", "");
 
-			Response.Headers.Add("Content-Disposition", $"inline; filename={fileName}");
-			return File(fileData, $"application/{ext}");
-		}
+            Response.Headers.Add("Content-Disposition", $"inline; filename={fileName}");
+            return File(fileData, $"application/{ext}");
+        }
 
 
-		// GET: Tickets/Archive/5
-		public async Task<IActionResult> Archive(int? id)
+        // GET: Tickets/Archive/5
+        public async Task<IActionResult> Archive(int? id)
         {
             if (id == null)
             {

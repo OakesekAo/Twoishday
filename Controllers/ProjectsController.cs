@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -97,8 +98,9 @@ namespace Twoishday.Controllers
 
             return View(projects);
         }
-        
+
         // GET: Assign PM
+        [HttpGet]
         public async Task<IActionResult> AssignPM(int projectId)
         {
             int companyId = User.Identity.GetCompanyId().Value;
@@ -124,6 +126,40 @@ namespace Twoishday.Controllers
             }
 
             return RedirectToAction(nameof(AssignPM), new { projectId = model.Project.Id });
+        }
+
+        //GET: Assign Members
+        public async Task<IActionResult> AssignMembers(int id)
+        {
+            int companyId = User.Identity.GetCompanyId().Value;
+
+            ProjectMembersViewModel model = new();
+
+            model.Project = await _projectService.GetProjectByIdAsync(id, companyId);
+
+            List<TDUser> developers = await _rolesService.GetUsersInRoleAsync(nameof(Roles.Developer), companyId);
+            List<TDUser> submitters = await _rolesService.GetUsersInRoleAsync(nameof(Roles.Submitter), companyId);
+
+            List<TDUser> companyMembers = developers.Concat(submitters).ToList();
+
+            List<string> projectMembers = model.Project.Members.Select(m => m.Id).ToList();
+            model.Users = new MultiSelectList(companyMembers, "Id", "FullName", projectMembers);
+
+            return View(model);
+        }
+
+        //POST: Assign Members 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AssignMembers(ProjectMembersViewModel model)
+        {
+            if (model.SelectedUsers != null)
+            {
+                List<string> memberIds = (await _projectService.GetAllProjectMembersExceptPMAsync(model.Project.Id)).Select(model => model.Id).ToList();
+
+            }
+
+            return RedirectToAction(nameof(AssignMembers), new { projectId = model.Project.Id });
         }
 
         // GET: Projects/Details/5

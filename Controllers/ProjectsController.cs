@@ -64,7 +64,7 @@ namespace Twoishday.Controllers
 
             int companyId = User.Identity.GetCompanyId().Value;
 
-            if(User.IsInRole(nameof(Roles.Admin)) || User.IsInRole(nameof(Roles.ProjectManager)))
+            if (User.IsInRole(nameof(Roles.Admin)) || User.IsInRole(nameof(Roles.ProjectManager)))
             {
                 projects = await _companyInfoService.GetAllProjectsAsync(companyId);
             }
@@ -157,6 +157,21 @@ namespace Twoishday.Controllers
             {
                 List<string> memberIds = (await _projectService.GetAllProjectMembersExceptPMAsync(model.Project.Id)).Select(model => model.Id).ToList();
 
+                //Remove current memebers
+                foreach (string member in memberIds)
+                {
+                    await _projectService.RemoveUserFromProjectAsync(member, model.Project.Id);
+                }
+
+                // add selected members
+                foreach (string member in model.SelectedUsers)
+                {
+                    await _projectService.AddUserToProjectAsync(member, model.Project.Id);
+                }
+
+
+                //goto project details
+                return RedirectToAction("Details", "Projects", new { id = model.Project.Id });
             }
 
             return RedirectToAction(nameof(AssignMembers), new { projectId = model.Project.Id });
@@ -190,9 +205,9 @@ namespace Twoishday.Controllers
             //add viewmodel instance
             AddProjectWithPMViewModel model = new();
 
-			// lead selectLists with data
-			model.PMList = new SelectList(await _rolesService.GetUsersInRoleAsync(Roles.ProjectManager.ToString(), companyId), "Id", "FullName");
-			model.PriorityList = new SelectList(await _lookupService.GetProjectPrioritiesAsync(), "Id", "Name");
+            // lead selectLists with data
+            model.PMList = new SelectList(await _rolesService.GetUsersInRoleAsync(Roles.ProjectManager.ToString(), companyId), "Id", "FullName");
+            model.PriorityList = new SelectList(await _lookupService.GetProjectPrioritiesAsync(), "Id", "Name");
 
 
             return View(model);
@@ -205,13 +220,13 @@ namespace Twoishday.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(AddProjectWithPMViewModel model)
         {
-            if(model != null)
+            if (model != null)
             {
                 int companyId = User.Identity!.GetCompanyId()!.Value;
 
                 try
                 {
-                    if(model.Project.ImageFormFile != null)
+                    if (model.Project.ImageFormFile != null)
                     {
                         model.Project.ImageFileData = await _fileService.ConvertFileToByteArrayAsync(model.Project.ImageFormFile);
                         model.Project.ImageFileName = model.Project.ImageFormFile.FileName;

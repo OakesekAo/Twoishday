@@ -22,7 +22,7 @@ namespace Twoishday.Services
         public async Task AddHistoryAsync(Ticket oldTicket, Ticket newTicket, string userId)
         {
             // new ticket has been added
-            if(oldTicket == null && newTicket != null)
+            if (oldTicket == null && newTicket != null)
             {
                 TicketHistory history = new()
                 {
@@ -158,6 +158,37 @@ namespace Twoishday.Services
             }
         }
 
+        public async Task AddHistoryAsync(int ticketId, string model, string userId)
+        {
+            try
+            {
+                Ticket ticket = await _context.Tickets.FindAsync(ticketId);
+                string description = model.ToLower().Replace("Ticket", "");
+                description = $"New {description} add to ticket: {ticket.Title}";
+
+                TicketHistory history = new()
+                {
+                    TicketId = ticket.Id,
+                    Property = model,
+                    OldValue = "",
+                    NewValue = "",
+                    Created = DateTimeOffset.Now,
+                    UserId = userId,
+                    Description = description
+                };
+
+                await _context.TicketHistories.AddAsync(history);
+                await _context.SaveChangesAsync();
+
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
         public async Task<List<TicketHistory>> GetCompanyTicketsHistoriesAsync(int companyId)
         {
             try
@@ -204,7 +235,7 @@ namespace Twoishday.Services
 
                 throw;
             }
- 
+
         }
     }
 }

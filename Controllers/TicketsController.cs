@@ -27,8 +27,9 @@ namespace Twoishday.Controllers
         private readonly ITDLookupService _lookupService;
         private readonly ITDTicketService _ticketService;
         private readonly ITDFileService _fileService;
+        private readonly ITDTicketHistoryService _historyService;
 
-        public TicketsController(ApplicationDbContext context, UserManager<TDUser> userManager, ITDProjectService projectSeervice, ITDLookupService lookupService, ITDTicketService ticketService, ITDFileService fileService)
+        public TicketsController(ApplicationDbContext context, UserManager<TDUser> userManager, ITDProjectService projectSeervice, ITDLookupService lookupService, ITDTicketService ticketService, ITDFileService fileService, ITDTicketHistoryService historyService)
         {
             _context = context;
             _userManager = userManager;
@@ -36,6 +37,7 @@ namespace Twoishday.Controllers
             _lookupService = lookupService;
             _ticketService = ticketService;
             _fileService = fileService;
+            _historyService = historyService;
         }
 
         // GET: Tickets
@@ -96,9 +98,9 @@ namespace Twoishday.Controllers
             {
                 List<Ticket> pmTickets = new(0);
 
-                foreach(Ticket ticket in tickets)
+                foreach (Ticket ticket in tickets)
                 {
-                    if(await _projectSeervice.IsAssignedProjectManagerAsync(tdUserId, ticket.ProjectId))
+                    if (await _projectSeervice.IsAssignedProjectManagerAsync(tdUserId, ticket.ProjectId))
                     {
                         pmTickets.Add(ticket);
                     }
@@ -126,9 +128,28 @@ namespace Twoishday.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AssignDeveloper(AssignDeveloperViewModel model)
         {
-            if(model.DeveloperId != null)
+            if (model.DeveloperId != null)
             {
-                await _ticketService.AssignTicketAsync(model.Ticket.Id, model.DeveloperId);
+                TDUser tdUser = await _userManager.GetUserAsync(User);
+                //oldTicket
+                Ticket oldTicket = await _ticketService.GetTicketNoTrackingAsync(model.Ticket.Id);
+
+
+                try
+                {
+                    await _ticketService.AssignTicketAsync(model.Ticket.Id, model.DeveloperId);
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+
+                //newTicket
+                Ticket newTicket = await _ticketService.GetTicketNoTrackingAsync(model.Ticket.Id);
+                await _historyService.AddHistoryAsync(oldTicket, newTicket, tdUser.Id);
+
+                return RedirectToAction(nameof(Details), new { id = model.Ticket.Id });
             }
 
             return RedirectToAction(nameof(AssignDeveloper), new { id = model.Ticket.Id });
@@ -185,16 +206,28 @@ namespace Twoishday.Controllers
             if (ModelState.IsValid)
             {
 
-                ticket.Created = DateTimeOffset.Now;
-                ticket.OwnerUserId = tdUser.Id;
+                try
+                {
+                    ticket.Created = DateTimeOffset.Now;
+                    ticket.OwnerUserId = tdUser.Id;
 
-                ticket.TicketStatusId = (await _ticketService.LookupTicketStatusIdAsync(nameof(TDTicketStatus.New))).Value;
+                    ticket.TicketStatusId = (await _ticketService.LookupTicketStatusIdAsync(nameof(TDTicketStatus.New))).Value;
 
-                await _ticketService.AddNewTicketAsync(ticket);
+                    await _ticketService.AddNewTicketAsync(ticket);
 
-                //TODO: Ticket History
+                    //TODO: Ticket History
+                    Ticket newTicket = await _ticketService.GetTicketNoTrackingAsync(ticket.Id);
+                    await _historyService.AddHistoryAsync(null, newTicket, tdUser.Id);
 
-                //TODO: Ticket Notification
+                    //TODO: Ticket Notification
+
+
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
 
                 return RedirectToAction(nameof(Index));
             }
@@ -251,6 +284,7 @@ namespace Twoishday.Controllers
             if (ModelState.IsValid)
             {
                 TDUser tdUser = await _userManager.GetUserAsync(User);
+                Ticket oldTicket = await _ticketService.GetTicketNoTrackingAsync(ticket.Id);
 
                 try
                 {
@@ -269,9 +303,10 @@ namespace Twoishday.Controllers
                     }
                 }
 
-                //TODO: add ticket history
+                Ticket newTicket = await _ticketService.GetTicketNoTrackingAsync(ticket.Id);
+                await _historyService.AddHistoryAsync(oldTicket, newTicket, tdUser.Id);
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(AllTickets));
             }
 
             ViewData["TicketPriorityId"] = new SelectList(await _lookupService.GetTicketPrioritiesAsync(), "Id", "Name", ticket.TicketPriorityId);

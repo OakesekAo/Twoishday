@@ -24,6 +24,7 @@ namespace Twoishday.Services.Interfaces
         public Task<List<Ticket>> GetAllTicketsByPriorityAsync(int companyId, string priorityName);
         public Task<List<Ticket>> GetAllTicketsByStatusAsync(int companyId, string statusName);
         public Task<List<Ticket>> GetAllTicketsByTypeAsync(int companyId, string typeName);
+        public Task<Ticket> GetTicketNoTrackingAsync(int ticketId);
         public Task<TDUser> GetTicketDeveloperAsync(int ticketId, int companyId);
         public Task<List<Ticket>> GetTicketsByRoleAsync(string role, string userId, int companyId);
         public Task<List<Ticket>> GetTicketsByUserIdAsync(string userId, int companyId);

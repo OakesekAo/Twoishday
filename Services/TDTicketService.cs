@@ -319,11 +319,32 @@ namespace Twoishday.Services
 			}
 		}
 
-		public async Task<Ticket> GetTicketByIdAsync(int ticketId)
+        public async Task<Ticket> GetTicketNoTrackingAsync(int ticketId)
+		{
+			try
+			{
+                return await _context.Tickets
+                    .Include(t => t.DeveloperUser)
+                    .Include(t => t.Project)
+                    .Include(t => t.TicketPriority)
+                    .Include(t => t.TicketStatus)
+                    .Include(t => t.TicketType)
+					.AsNoTracking()
+                    .FirstOrDefaultAsync(t => t.Id == ticketId);
+            }
+			catch (Exception)
+			{
+
+				throw;
+			}
+		}
+
+        public async Task<Ticket> GetTicketByIdAsync(int ticketId)
 		{
 			return await _context.Tickets
-								.Include(t => t.DeveloperUser)
-								.Include(t => t.Project)
+                                .Include(t => t.DeveloperUser)
+                                .Include(t => t.OwnerUser)
+                                .Include(t => t.Project)
 								.Include(t => t.TicketPriority)
 								.Include(t => t.TicketStatus)
 								.Include(t => t.TicketType)

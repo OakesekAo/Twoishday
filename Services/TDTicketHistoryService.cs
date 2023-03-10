@@ -18,7 +18,7 @@ namespace Twoishday.Services
             _context = context;
         }
 
-
+        // add history (1)
         public async Task AddHistoryAsync(Ticket oldTicket, Ticket newTicket, string userId)
         {
             // new ticket has been added
@@ -158,6 +158,7 @@ namespace Twoishday.Services
             }
         }
 
+        // add history (2)
         public async Task AddHistoryAsync(int ticketId, string model, string userId)
         {
             try

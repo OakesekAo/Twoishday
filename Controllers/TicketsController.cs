@@ -19,6 +19,7 @@ using Twoishday.Services.Interfaces;
 
 namespace Twoishday.Controllers
 {
+    [Authorize]
     public class TicketsController : Controller
     {
         private readonly UserManager<TDUser> _userManager;
@@ -48,6 +49,7 @@ namespace Twoishday.Controllers
             return View(tickets);
         }
 
+        // GET : All tickets
         public async Task<IActionResult> AllTickets()
         {
             int companyId = User.Identity.GetCompanyId().Value;
@@ -64,6 +66,7 @@ namespace Twoishday.Controllers
             }
         }
 
+        // GET : Archived tickets
         public async Task<IActionResult> ArchivedTickets()
         {
             int companyId = User.Identity.GetCompanyId().Value;
@@ -103,6 +106,7 @@ namespace Twoishday.Controllers
         }
 
         //GET: Assign developer to ticket
+        [Authorize(Roles = "Admin, ProjectManager")]
         [HttpGet]
         public async Task<IActionResult> AssignDeveloper(int id)
         {
@@ -115,6 +119,7 @@ namespace Twoishday.Controllers
         }
 
         //POST: Assign developer to ticket
+        [Authorize(Roles = "Admin, ProjectManager")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AssignDeveloper(AssignDeveloperViewModel model)
@@ -389,6 +394,7 @@ namespace Twoishday.Controllers
 
 
         // GET: Tickets/Archive/5
+        [Authorize(Roles = "Admin, ProjectManager")]
         public async Task<IActionResult> Archive(int? id)
         {
             if (id == null)
@@ -407,6 +413,7 @@ namespace Twoishday.Controllers
         }
 
         // POST: Tickets/Archive/5
+        [Authorize(Roles = "Admin, ProjectManager")]
         [HttpPost, ActionName("Archive")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ArchiveConfirmed(int id)
@@ -420,6 +427,7 @@ namespace Twoishday.Controllers
         }
 
         // GET: Tickets/Restore/5
+        [Authorize(Roles = "Admin, ProjectManager")]
         public async Task<IActionResult> Restore(int? id)
         {
             if (id == null)
@@ -438,6 +446,7 @@ namespace Twoishday.Controllers
         }
 
         // POST: Tickets/Restore/5
+        [Authorize(Roles = "Admin, ProjectManager")]
         [HttpPost, ActionName("Restore")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RestoreConfirmed(int id)

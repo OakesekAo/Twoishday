@@ -21,7 +21,6 @@ namespace Twoishday.Controllers
 {
     public class TicketsController : Controller
     {
-        private readonly ApplicationDbContext _context;
         private readonly UserManager<TDUser> _userManager;
         private readonly ITDProjectService _projectSeervice;
         private readonly ITDLookupService _lookupService;
@@ -29,22 +28,14 @@ namespace Twoishday.Controllers
         private readonly ITDFileService _fileService;
         private readonly ITDTicketHistoryService _historyService;
 
-        public TicketsController(ApplicationDbContext context, UserManager<TDUser> userManager, ITDProjectService projectSeervice, ITDLookupService lookupService, ITDTicketService ticketService, ITDFileService fileService, ITDTicketHistoryService historyService)
+        public TicketsController(UserManager<TDUser> userManager, ITDProjectService projectSeervice, ITDLookupService lookupService, ITDTicketService ticketService, ITDFileService fileService, ITDTicketHistoryService historyService)
         {
-            _context = context;
             _userManager = userManager;
             _projectSeervice = projectSeervice;
             _lookupService = lookupService;
             _ticketService = ticketService;
             _fileService = fileService;
             _historyService = historyService;
-        }
-
-        // GET: Tickets
-        public async Task<IActionResult> Index()
-        {
-            var applicationDbContext = _context.Tickets.Include(t => t.DeveloperUser).Include(t => t.Project).Include(t => t.TicketPriority).Include(t => t.TicketStatus).Include(t => t.TicketType);
-            return View(await applicationDbContext.ToListAsync());
         }
 
         // GET : user tickets

@@ -13,13 +13,14 @@ using Twoishday.Extensions;
 using Twoishday.Models;
 using Twoishday.Models.Enums;
 using Twoishday.Models.ViewModels;
+using Twoishday.Services;
 using Twoishday.Services.Interfaces;
 
 namespace Twoishday.Controllers
 {
+    [Authorize]
     public class ProjectsController : Controller
     {
-        private readonly ApplicationDbContext _context;
         private readonly ITDRolesService _rolesService;
         private readonly ITDLookupService _lookupService;
         private readonly ITDFileService _fileService;
@@ -28,9 +29,8 @@ namespace Twoishday.Controllers
         private readonly UserManager<TDUser> _userManager;
 
 
-        public ProjectsController(ApplicationDbContext context, ITDRolesService rolesService, ITDLookupService lookupService, ITDFileService fileService, ITDProjectService projectService, UserManager<TDUser> userManager, ITDCompanyInfoService companyInfoService)
+        public ProjectsController(ITDRolesService rolesService, ITDLookupService lookupService, ITDFileService fileService, ITDProjectService projectService, UserManager<TDUser> userManager, ITDCompanyInfoService companyInfoService)
         {
-            _context = context;
             _rolesService = rolesService;
             _lookupService = lookupService;
             _fileService = fileService;
@@ -39,12 +39,6 @@ namespace Twoishday.Controllers
             _companyInfoService = companyInfoService;
         }
 
-        // GET: Projects
-        public async Task<IActionResult> Index()
-        {
-            var applicationDbContext = _context.Projects.Include(p => p.Company).Include(p => p.ProjectPriority);
-            return View(await applicationDbContext.ToListAsync());
-        }
 
         // GET: MyProjects
         public async Task<IActionResult> MyProjects()
@@ -87,6 +81,7 @@ namespace Twoishday.Controllers
             return View(projects);
         }
 
+        [Authorize(Roles= nameof(Roles.Admin))]
         // GET: Unassignedprojects
         public async Task<IActionResult> UnassignedProjects()
         {
@@ -99,6 +94,7 @@ namespace Twoishday.Controllers
             return View(projects);
         }
 
+        [Authorize(Roles = nameof(Roles.Admin))]
         // GET: Assign PM
         [HttpGet]
         public async Task<IActionResult> AssignPM(int projectId)
@@ -113,6 +109,7 @@ namespace Twoishday.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = nameof(Roles.Admin))]
         //POST: Assign PM
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -128,6 +125,8 @@ namespace Twoishday.Controllers
             return RedirectToAction(nameof(AssignPM), new { projectId = model.Project.Id });
         }
 
+
+        [Authorize(Roles = "Admin, ProjectManager")]
         //GET: Assign Members
         public async Task<IActionResult> AssignMembers(int id)
         {
@@ -149,6 +148,7 @@ namespace Twoishday.Controllers
         }
 
         //POST: Assign Members 
+        [Authorize(Roles = "Admin, ProjectManager")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AssignMembers(ProjectMembersViewModel model)
@@ -198,6 +198,7 @@ namespace Twoishday.Controllers
         }
 
         // GET: Projects/Create
+        [Authorize(Roles = "Admin, ProjectManager")]
         public async Task<IActionResult> Create()
         {
             int companyId = User.Identity!.GetCompanyId()!.Value;
@@ -216,6 +217,7 @@ namespace Twoishday.Controllers
         // POST: Projects/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin, ProjectManager")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(AddProjectWithPMViewModel model)
@@ -258,6 +260,7 @@ namespace Twoishday.Controllers
         }
 
         // GET: Projects/Edit/5
+        [Authorize(Roles = "Admin, ProjectManager")]
         public async Task<IActionResult> Edit(int? id)
         {
             int companyId = User.Identity!.GetCompanyId()!.Value;
@@ -279,6 +282,7 @@ namespace Twoishday.Controllers
         // POST: Projects/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin, ProjectManager")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(AddProjectWithPMViewModel model)
@@ -303,10 +307,16 @@ namespace Twoishday.Controllers
                     }
 
                 }
-                catch (Exception)
+                catch (DbUpdateConcurrencyException)
                 {
-
-                    throw;
+                    if (!await ProjectExists(model.Project.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
 
                 //TODO: redirect to all projects
@@ -318,6 +328,7 @@ namespace Twoishday.Controllers
         }
 
         // GET: Projects/Archive/5
+        [Authorize(Roles = "Admin, ProjectManager")]
         public async Task<IActionResult> Archive(int? id)
         {
             if (id == null)
@@ -338,6 +349,7 @@ namespace Twoishday.Controllers
         }
 
         // POST: Projects/Archive/5
+        [Authorize(Roles = "Admin, ProjectManager")]
         [HttpPost, ActionName("Archive")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ArchiveConfirmed(int id)
@@ -351,6 +363,7 @@ namespace Twoishday.Controllers
         }
 
         // GET: Projects/Restore/5
+        [Authorize(Roles = "Admin, ProjectManager")]
         public async Task<IActionResult> Restore(int? id)
         {
             if (id == null)
@@ -371,6 +384,7 @@ namespace Twoishday.Controllers
         }
 
         // POST: Projects/Restore/5
+        [Authorize(Roles = "Admin, ProjectManager")]
         [HttpPost, ActionName("Restore")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RestoreConfirmed(int id)
@@ -383,9 +397,11 @@ namespace Twoishday.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ProjectExists(int id)
+        private async Task<bool> ProjectExists(int id)
         {
-            return _context.Projects.Any(e => e.Id == id);
+            int companyId = User.Identity.GetCompanyId().Value;
+
+            return (await _projectService.GetAllProjectsByCompanyAsync(companyId)).Any(p => p.Id == id);
         }
     }
 }

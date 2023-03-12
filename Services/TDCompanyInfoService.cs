@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,11 +12,58 @@ namespace Twoishday.Services
     public class TDCompanyInfoService : ITDCompanyInfoService
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<TDUser> _userManager;
 
 
-        public TDCompanyInfoService(ApplicationDbContext context)
+
+        public TDCompanyInfoService(ApplicationDbContext context, UserManager<TDUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
+        }
+
+
+        public async Task<Company> AddCompanyAsync(Company company)
+        {
+            try
+            {
+                await _context.AddAsync(company);
+                await _context.SaveChangesAsync();
+                return company;
+            }
+            catch (System.Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<Company> AddUserAsync(string name, string description)
+        {
+            name  = name.ToLower();
+            description = description.ToLower();
+
+            List<Company> companies = await _context.Companies!.ToListAsync();
+
+            foreach(Company company in companies)
+            {
+                if(company.Name == name && company.Description == description)
+                {
+                    return company;
+                }
+            }
+
+            Company newCompany = new()
+            {
+                Name = name,
+                Description = description,
+            };
+
+            await AddCompanyAsync(newCompany);
+
+            return newCompany;
+
+
         }
 
         public async Task<List<TDUser>> GetAllMembersAsync(int companyId)

@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Twoishday.Models;
+using Twoishday.Services.Interfaces;
 
 namespace Twoishday.Areas.Identity.Pages.Account
 {
@@ -24,17 +25,23 @@ namespace Twoishday.Areas.Identity.Pages.Account
         private readonly UserManager<TDUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly ITDCompanyInfoService _companyInfoService;
+        private readonly ITDRolesService _rolesService;
 
         public RegisterModel(
             UserManager<TDUser> userManager,
             SignInManager<TDUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            ITDCompanyInfoService companyInfoService,
+            ITDRolesService rolesService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _companyInfoService = companyInfoService;
+            _rolesService = rolesService;
         }
 
         [BindProperty]
@@ -58,6 +65,14 @@ namespace Twoishday.Areas.Identity.Pages.Account
             [Required]
             [Display(Name = "Last Name")]
             public string LastName { get; set; }
+
+
+            [Display(Name = "Company Name")]
+            public string CompanyName { get; set; }
+
+
+            [Display(Name = "Company Description")]
+            public string Description { get; set; }
 
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
@@ -83,13 +98,24 @@ namespace Twoishday.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new TDUser { UserName = Input.Email, Email = Input.Email, FirstName = Input.FirstName, LastName = Input.LastName };
+
+                var user = new TDUser
+                {
+                    UserName = Input.Email,
+                    Email = Input.Email,
+                    FirstName = Input.FirstName,
+                    LastName = Input.LastName,
+                    Company = await _companyInfoService.AddUserAsync(Input.CompanyName, Input.Description),
+                };
+
                 var result = await _userManager.CreateAsync(user, Input.Password);
+
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                     var callbackUrl = Url.Page(
                         "/Account/ConfirmEmail",

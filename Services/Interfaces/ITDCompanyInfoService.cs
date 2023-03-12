@@ -6,6 +6,9 @@ namespace Twoishday.Services.Interfaces
 {
     public interface ITDCompanyInfoService
     {
+
+        public Task<Company> AddCompanyAsync(Company company);
+        public Task<Company> AddUserAsync(string name, string description);
         public Task<Company> GetCompanyInfoByIdAsync(int? companyId);
         
         public Task<List<TDUser>> GetAllMembersAsync(int companyId);

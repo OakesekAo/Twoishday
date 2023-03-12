@@ -7,20 +7,38 @@
 
 <h1>@ViewData["Title"]</h1>
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <section>
             <form id="account" method="post">
-                <h4>Use a local account to log in.</h4>
+                <h4>Log in</h4>
                 <hr />
+                <div>
+                    <h4>Demo Comapny</h4>
+                    <button class="btn btn-group-sm btn-primary mb-3" onclick="demoAdmin()">Demo Admin</button>
+                    <button class="btn btn-group-sm btn-primary mb-3" onclick="demoPM()">Demo Project Manager</button>
+                    <button class="btn btn-group-sm btn-primary mb-3" onclick="demoDeveloper()">Demo Developer</button>
+                    <button class="btn btn-group-sm btn-primary mb-3" onclick="demoSubmitter()">Demo Submitter</button>
+                </div>
+                <hr />
+
+
+
+
+
+
+
+
+
+
                 <div asp-validation-summary="All" class="text-danger"></div>
                 <div class="form-group">
                     <label asp-for="Input.Email"></label>
-                    <input asp-for="Input.Email" class="form-control" />
+                    <input id="email" asp-for="Input.Email" class="form-control" />
                     <span asp-validation-for="Input.Email" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="Input.Password"></label>
-                    <input asp-for="Input.Password" class="form-control" />
+                    <input id="password" asp-for="Input.Password" class="form-control" />
                     <span asp-validation-for="Input.Password" class="text-danger"></span>
                 </div>
                 <div class="form-group">
@@ -48,38 +66,28 @@
             </form>
         </section>
     </div>
-    <div class="col-md-6 col-md-offset-2">
-        <section>
-            <h4>Use another service to log in.</h4>
-            <hr />
-            @{
-                if ((Model.ExternalLogins?.Count ?? 0) == 0)
-                {
-                    <div>
-                        <p>
-                            There are no external authentication services configured. See <a href="https://go.microsoft.com/fwlink/?LinkID=532715">this article</a>
-                            for details on setting up this ASP.NET application to support logging in via external services.
-                        </p>
-                    </div>
-                }
-                else
-                {
-                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
-                        <div>
-                            <p>
-                                @foreach (var provider in Model.ExternalLogins)
-                                {
-                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
-                                }
-                            </p>
-                        </div>
-                    </form>
-                }
-            }
-        </section>
-    </div>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+
+    <script>
+        demoAdmin = () => {
+            let email = document.getElementById('email').value = "demoadmin@bugtracker.com";
+            let password = document.getElementById('password').value = "Abc&123!";
+        }
+        demoPM = () => {
+            let email = document.getElementById('email').value = "demopm@bugtracker.com";
+            let password = document.getElementById('password').value = "Abc&123!";
+        }
+        demoDeveloper = () => {
+            let email = document.getElementById('email').value = "demodev@bugtracker.com";
+            let password = document.getElementById('password').value = "Abc&123!";
+        }
+        demoSubmitter = () => {
+            let email = document.getElementById('email').value = "demosub@bugtracker.com";
+            let password = document.getElementById('password').value = "Abc&123!";
+        }
+    </script>
 }

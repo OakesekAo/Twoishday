@@ -423,7 +423,7 @@ namespace Twoishday.Controllers
             await _ticketService.UpdateTicketAsync(ticket);
 
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(AllTickets));
         }
 
         // GET: Tickets/Restore/5
@@ -456,7 +456,7 @@ namespace Twoishday.Controllers
             await _ticketService.UpdateTicketAsync(ticket);
 
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(AllTickets));
         }
 
         private async Task<bool> TicketExists(int id)

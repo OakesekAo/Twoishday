@@ -8,11 +8,11 @@
             <div class="row">
                 <div class="col-lg-6 mb-3">
                     <h1 class="display-4 mb-3">Twoishday</h1>
-                    <p class="lead mb-4">Streamline your issue tracking and management with Twoishday, the powerful and easy-to-use platform that helps your team stay organized and productive.</p>
+                    <p class="lead mb-4">Streamline your project management with Twoishday, the powerful and easy-to-use platform that helps your team stay organized and productive.</p>
                     <a class="btn btn-primary btn-lg" asp-area="Identity" asp-page="/Account/Login" role="button">Try Demo</a>
                 </div>
                 <div class="col-lg-6">
-                    <img src="https://via.placeholder.com/800x600.png" class="img-fluid rounded" alt="Screenshot of BugTracker dashboard">
+                    <img src="~/img/splash.jpg" class="img-fluid rounded" alt="Screenshot of BugTracker dashboard">
                 </div>
             </div>
         </div>
@@ -47,7 +47,7 @@
                 </div>
             </div>
         </div>
-        <div class="container py-5">
+        @*<div class="container py-5">
             <h2 class="text-center mb-5">Pricing</h2>
             <div class="row">
                 <div class="col-md-4 mb-3">
@@ -102,14 +102,14 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div>*@
         <div class="container py-5">
             <h2 class="text-center mb-5">Testimonials</h2>
             <div class="row">
                 <div class="col-md-4 mb-3">
                     <div class="card h-100">
                         <div class="card-body text-center">
-                            <p class="card-text">"BugTracker has been a game-changer for our team. We're able to track all of our tasks in one place and collaborate more effectively."</p>
+                            <p class="card-text">"Twoishday has been a game-changer for our team. We're able to track all of our tasks in one place and collaborate more effectively."</p>
                             <p class="lead">- John Smith, ABC Company</p>
                         </div>
                     </div>
@@ -117,7 +117,7 @@
                 <div class="col-md-4 mb-3">
                     <div class="card h-100">
                         <div class="card-body text-center">
-                            <p class="card-text">"I love how easy it is to use BugTracker. The interface is intuitive and the reporting tools are fantastic."</p>
+                            <p class="card-text">"I love how easy it is to use Twoishday. The interface is intuitive and the reporting tools are fantastic."</p>
                             <p class="lead">- Jane Doe, XYZ Corporation</p>
                         </div>
                     </div>
@@ -125,34 +125,33 @@
                 <div class="col-md-4 mb-3">
                     <div class="card h-100">
                         <div class="card-body text-center">
-                            <p class="card-text">"BugTracker has helped us stay organized and on track. I highly recommend it to any team looking to improve their workflow."</p>
+                            <p class="card-text">"Twoishday has helped us stay organized and on track. I highly recommend it to any team looking to improve their workflow."</p>
                             <p class="lead">- Bob Johnson, 123 Industries</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="container py-5 align-content-center">
+        <div class="container py-5">
             <h2 class="text-center mb-5">Get in Touch</h2>
-            <div class="row align-content-center">
-                <div class="col-6 align-content-center">
+            <div class="row">
+                <div class="col"></div>
+                <div class="col-6">
                     <p class="lead mb-4">Have a question or need more information? Fill out the form below and we'll get back to you as soon as possible.</p>
                     <form>
                         <div class="mb-3">
-                            <label for="nameInput" class="form-label">Name</label>
                             <input type="text" class="form-control" id="nameInput" placeholder="Your name">
                         </div>
                         <div class="mb-3">
-                            <label for="emailInput" class="form-label">Email address</label>
                             <input type="email" class="form-control" id="emailInput" placeholder="name@example.com">
                         </div>
                         <div class="mb-3">
-                            <label for="messageInput" class="form-label">Message</label>
-                            <textarea class="form-control" id="messageInput" rows="5"></textarea>
+                            <textarea class="form-control" id="messageInput" rows="5" placeholder="Enter message here..."></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary disabled">Submit</button>
                     </form>
                 </div>
+                <div class="col"></div>
 
            </div>
         </div>

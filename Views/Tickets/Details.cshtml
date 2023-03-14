@@ -146,8 +146,19 @@
                                                 </a>
                                                 <div class="media-body">
                                                     <span class="text-muted" style="font-size:x-small;">
-                                                        @@ @comment.User.FullName
-                                                        <small class="float-right">@comment.Created.ToString("MM.dd.yyyy h:ss tt")</small>:
+
+                                                        @if (comment.User != null)
+                                                        {
+                                                            <span>@@</span> @comment.User.FullName
+                                                            <small class="float-right">@comment.Created.ToString("MM.dd.yyyy h:ss tt"):</small>
+                                                                                            
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>@@ Anon</span>
+                                                            <small class="float-right">@comment.Created.ToString("MM.dd.yyyy h:ss tt"):</small>
+                                                                                            
+                                                        }
                                                     </span>
                                                 </div>
                                                 <span class="message text-primary">@Html.Raw(comment.Comment)</span>
@@ -237,7 +248,7 @@
 
                                     <span class="date" style="font-weight:bold">@history.Created.ToString("dd MMM yyyy")</span>
                                     <h6>@history.Description</h6>
-                                    <span>By: <a href="" title="@history.User.FullName">@history.User.FullName</a></span>
+                                    <span>By: <a href="" title="@history.User?.FullName">@history.User?.FullName</a></span>
                                     <div class="">
                                         @if (history.Description.Contains("New Ticket Created"))
                                         {

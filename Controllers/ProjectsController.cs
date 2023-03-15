@@ -253,7 +253,7 @@ namespace Twoishday.Controllers
                 }
 
                 //TODO: redirect to all projects
-                return RedirectToAction("Index");
+                return RedirectToAction("Details", new { id = model.Project.Id });
             }
 
             return RedirectToAction("Create");

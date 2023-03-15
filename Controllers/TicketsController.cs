@@ -225,7 +225,7 @@ namespace Twoishday.Controllers
                     throw;
                 }
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Details", new { id = ticket.Id });
             }
 
             if (User.IsInRole(nameof(Roles.Admin)))

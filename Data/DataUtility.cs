@@ -18,9 +18,6 @@ namespace Twoishday.Data
         //Company Ids
         private static int company1Id;
         private static int company2Id;
-        private static int company3Id;
-        private static int company4Id;
-        private static int company5Id;
 
         public static string GetConnectionString(IConfiguration configuration)
         {

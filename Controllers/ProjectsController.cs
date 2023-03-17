@@ -253,7 +253,7 @@ namespace Twoishday.Controllers
                 }
 
                 //TODO: redirect to all projects
-                return RedirectToAction("Index");
+                return RedirectToAction("AllProjects");
             }
 
             return RedirectToAction("Create");
@@ -320,7 +320,7 @@ namespace Twoishday.Controllers
                 }
 
                 //TODO: redirect to all projects
-                return RedirectToAction("Index");
+                return RedirectToAction("AllProjects");
             }
 
             return RedirectToAction("Edit");
@@ -359,7 +359,7 @@ namespace Twoishday.Controllers
             var project = await _projectService.GetProjectByIdAsync(id, companyId);
             await _projectService.ArchiveProjectAsync(project);
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(AllProjects));
         }
 
         // GET: Projects/Restore/5
@@ -394,7 +394,7 @@ namespace Twoishday.Controllers
             var project = await _projectService.GetProjectByIdAsync(id, companyId);
             await _projectService.RestoreProjectAsync(project);
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(AllProjects));
         }
 
         private async Task<bool> ProjectExists(int id)

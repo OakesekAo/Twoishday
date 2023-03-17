@@ -15,8 +15,10 @@
 <body>
     <div class="container-fluid overflow-hidden">
         <div class="row vh-100 overflow-auto">
-            <div class="col-12 col-sm-3 col-xl-2 px-sm-2 px-0 bg-dark d-flex sticky-top">
+
+            <div class="col-12 col-md-3 col-xl-2 px-sm-2 px-0 bg-dark d-flex sticky-top">
                 <div class="d-flex flex-sm-column flex-row flex-grow-1 align-items-center align-items-sm-start px-3 pt-2 text-white">
+
                     <a href="/" class="d-flex align-items-center pb-sm-3 mb-md-0 me-md-auto text-white text-decoration-none">
                         <span class="fs-5">T<span class="d-none d-sm-inline">woishday</span></span>
                     </a>
@@ -83,11 +85,9 @@
                     }
                 </div>
             </div>
-            <div class="col d-flex flex-column h-100">
-                <main class="row">
-                    <div class="container">
+            <div class="col d-flex flex-md-column h-100">
+                <main class="row h-100">
                     @RenderBody()
-                    </div>
                 </main>
                 <footer class="row bg-light py-4 mt-auto">
                     <div class="container">
@@ -95,7 +95,7 @@
                     </div>
                 </footer>
             </div>
-        </div>
+            </div>
     </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

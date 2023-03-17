@@ -1,41 +1,75 @@
-﻿@model IEnumerable<Twoishday.Models.Company>
+﻿@model Twoishday.Models.ViewModels.DashboardViewModel
+@using Twoishday.Models
+@using Twoishday.Models.Enums
+@using Twoishday.Services.Interfaces
+@using Microsoft.AspNetCore.Identity
+
+@inject UserManager<TDUser> UserManager
+@inject ITDRolesService RolesService
+
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Company";
+    TDUser tdUser = await UserManager.GetUserAsync(User);
+
 }
 
-<h1>Index</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<h1 class="text-capitalize">@Model.Company!.Name</h1>
+
+<h4 class="lead text-capitalize">@Model.Company.Description</h4>
+
+<div class="row">
+    <div class="col-md-12">
+        <div>
+            <div class="dashboard-card m-1 p-2">
+                <div class="card-header d-flex justify-content-between">
+                    <h2>Members</h2>
+                    @*<a class="btn btn-xs btn-primary" asp-action="Create" asp-controller="Invites" asp-route-id="">Invite New Team Member</a>*@
+                </div>
+                <div class="table-responsive" style="overflow-y:auto;height:600px;">
+                    <table class="table table-hover table-secondary">
+                        <thead class="">
+                            <tr>
+                                <th>Name</th>
+                                <th>Role</th>
+                                <th>Action</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (TDUser member in Model.Members!)
+                            {
+                                <tr>
+                                    <td><strong>@member.FullName</strong></td>
+                                    <td><span style="font-size:small">@((await RolesService.GetUserRolesAsync(member)).FirstOrDefault())</span></td>
+                                    <td>
+                                        <a class="btn btn-sm btn-outline-scondary" asp-action="ManageUserRoles" asp-controller="UserRoles" asp-route-id="@member.Id"><i class="fs-5 bi bi-person-badge"></i></a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*<div class="row">
+    <div class="col-md-12">
+        <div>
+            <div class="dashboard-card m-1 p-2">
+                <div class="card-header d-flex justify-content-between">
+                    <h2>Pending Invites</h2>
+                </div>
+                <div class="card-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>*@
+
+

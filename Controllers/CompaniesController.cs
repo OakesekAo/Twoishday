@@ -6,23 +6,41 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Twoishday.Data;
+using Twoishday.Extensions;
 using Twoishday.Models;
+using Twoishday.Models.ViewModels;
+using Twoishday.Services.Interfaces;
 
 namespace Twoishday.Controllers
 {
     public class CompaniesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly ITDCompanyInfoService _companyInfoService;
 
-        public CompaniesController(ApplicationDbContext context)
+        public CompaniesController(ApplicationDbContext context, ITDCompanyInfoService companyInfoService)
         {
             _context = context;
+            _companyInfoService = companyInfoService;
         }
 
-        // GET: Companies
+        // GET: Company Info
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Companies.ToListAsync());
+            DashboardViewModel model = new();
+            int companyId = User.Identity!.GetCompanyId()!.Value;
+
+            model.Company = await _companyInfoService.GetCompanyInfoByIdAsync(companyId);
+            model.Projects = (await _companyInfoService.GetAllProjectsAsync(companyId))
+                                                        .Where(p=>p.Archived == false)
+                                                        .ToList();
+            model.Tickets = model.Projects.SelectMany(p=>p.Tickets!)
+                                            .Where(p=>p.Archived == false)
+                                            .ToList();
+            model.Members = model.Company.Members!.ToList();
+
+
+            return View(model);
         }
 
         // GET: Companies/Details/5

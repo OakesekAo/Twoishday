@@ -16,7 +16,7 @@
 }
 
 <h1>Ticket Details</h1>
-
+    
 @if (!string.IsNullOrEmpty(Model.DeveloperUserId))
 {
     <a href="#">
@@ -34,6 +34,8 @@
     </span>
 
 }
+
+<a asp-controller="Projects" asp-action="Details" asp-route-id="@Model.ProjectId">@Model.Project.Name</a>
 
 <div>
     <div classxfont-weighteighteightgetainer-fluid">

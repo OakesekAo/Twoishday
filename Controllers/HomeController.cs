@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Twoishday.Extensions;
 using Twoishday.Models;
+using Twoishday.Models.Enums;
 using Twoishday.Models.ViewModels;
 using Twoishday.Services.Interfaces;
 
@@ -28,6 +30,8 @@ namespace Twoishday.Controllers
             return View();
         }
 
+
+        [Authorize]
         public async Task<IActionResult> Dashboard()
         {
             DashboardViewModel model = new();

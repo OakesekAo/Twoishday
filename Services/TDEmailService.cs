@@ -22,7 +22,8 @@ namespace Twoishday.Services
             MimeMessage email = new();
 
             email.From.Add(new MailboxAddress(_mailSettings.DisplayName, _mailSettings.Email));
-            //email.Sender = MailboxAddress.Parse(_mailSettings.Email);
+            
+            email.Sender = MailboxAddress.Parse(_mailSettings.Email);
             email.To.Add(MailboxAddress.Parse(emailTo));
             email.Subject = subject;
 

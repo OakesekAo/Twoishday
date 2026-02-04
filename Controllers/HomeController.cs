@@ -27,6 +27,12 @@ namespace Twoishday.Controllers
 
         public IActionResult Index()
         {
+            // Redirect logged-in users to dashboard
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction(nameof(Dashboard));
+            }
+
             return View();
         }
 

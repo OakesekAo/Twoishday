@@ -22,10 +22,12 @@
     <!-- SB Admin Theme -->
     <link href="~/css/sb-admin-2.min.css" rel="stylesheet" asp-append-version="true" />
 
-    <!-- Custom Site Styles -->
-    <link href="~/css/site.css" rel="stylesheet" asp-append-version="true" />
+        <!-- Custom Site Styles -->
+        <link href="~/css/site.css" rel="stylesheet" asp-append-version="true" />
 
-</head>
+        @RenderSection("Styles", required: false)
+
+    </head>
 <body id="page-top">
 
     <!-- Page Wrapper -->

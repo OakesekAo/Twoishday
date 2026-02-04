@@ -2,51 +2,113 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <main>
-        <div class="container py-5">
-            <div class="row">
-                <div class="col-lg-6 mb-3">
-                    <h1 class="display-4 mb-3">Twoishday</h1>
-                    <p class="lead mb-4">Streamline your project management with Twoishday, the powerful and easy-to-use platform that helps your team stay organized and productive.</p>
-                    <a class="btn btn-primary btn-lg" asp-area="Identity" asp-page="/Account/Login" role="button">Try Demo</a>
-                </div>
-                <div class="col-lg-6">
-                    <img src="~/img/splash.jpg" class="img-fluid rounded" alt="Screenshot of BugTracker dashboard">
-                </div>
-            </div>
-        </div>
+@section Styles {
+    <link href="~/css/landing.css" rel="stylesheet" asp-append-version="true" />
+}
 
-        <div class="container py-5">
-            <h2 class="text-center mb-5">Key Features</h2>
+<div class="smooth-scroll">
+    <main>
+        <!-- Hero Section -->
+        <section class="hero-section text-white py-5 py-md-6">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 mb-4 mb-lg-0 text-center text-lg-start">
+                        <h1 class="display-3 fw-bold mb-3 animate-on-scroll">Transform Your Project Management</h1>
+                        <p class="lead mb-4 fs-4 animate-on-scroll">Streamline workflows, boost team productivity, and deliver projects on time with Twoishday - the modern platform trusted by teams worldwide.</p>
+                        <div class="animate-on-scroll">
+                            <a class="btn cta-button cta-primary px-4 py-2 px-md-5 py-md-3 m-1 m-md-2" asp-area="Identity" asp-page="/Account/Register" role="button">
+                                <i class="bi bi-rocket-takeoff me-2"></i>Get Started Free
+                            </a>
+                            <a class="btn cta-button cta-secondary px-4 py-2 px-md-5 py-md-3 m-1 m-md-2" asp-area="Identity" asp-page="/Account/Login" role="button">
+                                <i class="bi bi-play-circle me-2"></i>Try Demo
+                            </a>
+                        </div>
+                        <p class="mt-3 small">No credit card required • Free 14-day trial</p>
+                    </div>
+                    <div class="col-lg-6">
+                        <img src="~/img/splash.jpg" class="img-fluid rounded shadow-lg animate-on-scroll" alt="Twoishday Dashboard" style="border-radius: 15px;">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section class="container py-5 my-5">
+            <h2 class="text-center mb-2 display-5 fw-bold">How It Works</h2>
+            <p class="text-center text-muted mb-5">Get started in minutes with our simple three-step process</p>
             <div class="row">
-                <div class="col-md-4 mb-3">
-                    <div class="card h-100">
-                        <div class="card-body text-center">
-                            <h3 class="card-title mb-3">Project Tracking</h3>
-                            <p class="card-text">
-                                Track all of your project's issues and bugs in one place, with easy-to-use tools for creating, assigning, and prioritizing tasks.</p>
-                        </div>
+                <div class="col-md-4 mb-4">
+                    <div class="how-it-works-step text-center p-4 p-md-5">
+                        <div class="step-number">1</div>
+                        <h3 class="mb-3">Create Your Project</h3>
+                        <p class="text-muted">Set up your workspace in seconds. Add project details, invite team members, and configure your workflow.</p>
                     </div>
                 </div>
-                <div class="col-md-4 mb-3">
-                    <div class="card h-100">
-                        <div class="card-body text-center">
-                            <h3 class="card-title mb-3">Collaboration</h3>
-                            <p class="card-text">Invite team members and collaborate in real-time, with powerful tools for commenting, sharing files, and more.</p>
-                        </div>
+                <div class="col-md-4 mb-4">
+                    <div class="how-it-works-step text-center p-4 p-md-5">
+                        <div class="step-number">2</div>
+                        <h3 class="mb-3">Track Your Work</h3>
+                        <p class="text-muted">Create tickets, assign tasks, set priorities, and monitor progress with powerful tracking tools.</p>
                     </div>
                 </div>
-                <div class="col-md-4 mb-3">
-                    <div class="card h-100">
-                        <div class="card-body text-center">
-                            <h3 class="card-title mb-3">Reporting</h3>
-                            <p class="card-text">Get real-time insights into your team's performance and progress, with customizable reporting and analytics tools.</p>
+                <div class="col-md-4 mb-4">
+                    <div class="how-it-works-step text-center p-4 p-md-5">
+                        <div class="step-number">3</div>
+                        <h3 class="mb-3">Deliver Results</h3>
+                        <p class="text-muted">Collaborate in real-time, get insights with analytics, and ship projects faster than ever before.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Features Section -->
+        <section class="bg-light py-5">
+            <div class="container py-5">
+                <h2 class="text-center mb-2 display-5 fw-bold">Powerful Features</h2>
+                <p class="text-center text-muted mb-5">Everything you need to manage projects effectively</p>
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center p-4">
+                                <div class="text-primary mb-4" style="font-size: 3rem;">
+                                    <i class="bi bi-kanban"></i>
+                                </div>
+                                <h3 class="card-title mb-3">Project Tracking</h3>
+                                <p class="card-text text-muted">
+                                    Track all of your project's issues and bugs in one place, with easy-to-use tools for creating, assigning, and prioritizing tasks.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center p-4">
+                                <div class="text-primary mb-4" style="font-size: 3rem;">
+                                    <i class="bi bi-people"></i>
+                                </div>
+                                <h3 class="card-title mb-3">Team Collaboration</h3>
+                                <p class="card-text text-muted">
+                                    Invite team members and collaborate in real-time, with powerful tools for commenting, sharing files, and staying connected.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center p-4">
+                                <div class="text-primary mb-4" style="font-size: 3rem;">
+                                    <i class="bi bi-graph-up-arrow"></i>
+                                </div>
+                                <h3 class="card-title mb-3">Analytics & Reporting</h3>
+                                <p class="card-text text-muted">
+                                    Get real-time insights into your team's performance and progress, with customizable reporting and analytics tools.
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
         @*<div class="container py-5">
             <h2 class="text-center mb-5">Pricing</h2>
             <div class="row">
@@ -103,57 +165,232 @@
                 </div>
             </div>
         </div>*@
-        <div class="container py-5">
-            <h2 class="text-center mb-5">Testimonials</h2>
+
+        <!-- Testimonials Section -->
+        <section class="container py-5 my-5">
+            <h2 class="text-center mb-2 display-5 fw-bold">What Our Users Say</h2>
+            <p class="text-center text-muted mb-5">Join thousands of satisfied teams worldwide</p>
             <div class="row">
-                <div class="col-md-4 mb-3">
-                    <div class="card h-100">
-                        <div class="card-body text-center">
-                            <p class="card-text">"Twoishday has been a game-changer for our team. We're able to track all of our tasks in one place and collaborate more effectively."</p>
-                            <p class="lead">- John Smith, ABC Company</p>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="mb-3">
+                                <i class="bi bi-star-fill text-warning"></i>
+                                <i class="bi bi-star-fill text-warning"></i>
+                                <i class="bi bi-star-fill text-warning"></i>
+                                <i class="bi bi-star-fill text-warning"></i>
+                                <i class="bi bi-star-fill text-warning"></i>
+                            </div>
+                            <p class="card-text mb-3">"Twoishday has been a game-changer for our team. We're able to track all of our tasks in one place and collaborate more effectively."</p>
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; font-weight: bold;">
+                                    JS
+                                </div>
+                                <div>
+                                    <p class="mb-0 fw-bold">John Smith</p>
+                                    <p class="mb-0 small text-muted">Project Manager, ABC Company</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4 mb-3">
-                    <div class="card h-100">
-                        <div class="card-body text-center">
-                            <p class="card-text">"I love how easy it is to use Twoishday. The interface is intuitive and the reporting tools are fantastic."</p>
-                            <p class="lead">- Jane Doe, XYZ Corporation</p>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="mb-3">
+                                <i class="bi bi-star-fill text-warning"></i>
+                                <i class="bi bi-star-fill text-warning"></i>
+                                <i class="bi bi-star-fill text-warning"></i>
+                                <i class="bi bi-star-fill text-warning"></i>
+                                <i class="bi bi-star-fill text-warning"></i>
+                            </div>
+                            <p class="card-text mb-3">"I love how easy it is to use Twoishday. The interface is intuitive and the reporting tools are fantastic."</p>
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; font-weight: bold;">
+                                    JD
+                                </div>
+                                <div>
+                                    <p class="mb-0 fw-bold">Jane Doe</p>
+                                    <p class="mb-0 small text-muted">Team Lead, XYZ Corporation</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4 mb-3">
-                    <div class="card h-100">
-                        <div class="card-body text-center">
-                            <p class="card-text">"Twoishday has helped us stay organized and on track. I highly recommend it to any team looking to improve their workflow."</p>
-                            <p class="lead">- Bob Johnson, 123 Industries</p>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="mb-3">
+                                <i class="bi bi-star-fill text-warning"></i>
+                                <i class="bi bi-star-fill text-warning"></i>
+                                <i class="bi bi-star-fill text-warning"></i>
+                                <i class="bi bi-star-fill text-warning"></i>
+                                <i class="bi bi-star-fill text-warning"></i>
+                            </div>
+                            <p class="card-text mb-3">"Twoishday has helped us stay organized and on track. I highly recommend it to any team looking to improve their workflow."</p>
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle bg-info text-white d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; font-weight: bold;">
+                                    BJ
+                                </div>
+                                <div>
+                                    <p class="mb-0 fw-bold">Bob Johnson</p>
+                                    <p class="mb-0 small text-muted">CTO, 123 Industries</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="container py-5">
-            <h2 class="text-center mb-5">Get in Touch</h2>
-            <div class="row">
-                <div class="col"></div>
-                <div class="col-6">
-                    <p class="lead mb-4">Have a question or need more information? Fill out the form below and we'll get back to you as soon as possible.</p>
-                    <form>
-                        <div class="mb-3">
-                            <input type="text" class="form-control" id="nameInput" placeholder="Your name">
+            <!-- Logo Section -->
+            <div class="text-center mt-5 pt-5">
+                <p class="text-muted mb-4">TRUSTED BY LEADING COMPANIES</p>
+                <div class="row align-items-center">
+                    <div class="col-md-3 col-6 mb-4">
+                        <div class="p-3 bg-white rounded shadow-sm" style="opacity: 0.7;">
+                            <h5 class="mb-0 text-muted">Company A</h5>
                         </div>
-                        <div class="mb-3">
-                            <input type="email" class="form-control" id="emailInput" placeholder="name@example.com">
+                    </div>
+                    <div class="col-md-3 col-6 mb-4">
+                        <div class="p-3 bg-white rounded shadow-sm" style="opacity: 0.7;">
+                            <h5 class="mb-0 text-muted">Company B</h5>
                         </div>
-                        <div class="mb-3">
-                            <textarea class="form-control" id="messageInput" rows="5" placeholder="Enter message here..."></textarea>
+                    </div>
+                    <div class="col-md-3 col-6 mb-4">
+                        <div class="p-3 bg-white rounded shadow-sm" style="opacity: 0.7;">
+                            <h5 class="mb-0 text-muted">Company C</h5>
                         </div>
-                        <button type="submit" class="btn btn-primary disabled">Submit</button>
-                    </form>
+                    </div>
+                    <div class="col-md-3 col-6 mb-4">
+                        <div class="p-3 bg-white rounded shadow-sm" style="opacity: 0.7;">
+                            <h5 class="mb-0 text-muted">Company D</h5>
+                        </div>
+                    </div>
                 </div>
-                <div class="col"></div>
+            </div>
+        </section>
+                <!-- CTA Section -->
+                <section class="py-5 my-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <div class="container text-center text-white py-5">
+                        <h2 class="display-4 fw-bold mb-3">Ready to Transform Your Workflow?</h2>
+                        <p class="lead mb-4 fs-5">Join thousands of teams already using Twoishday to deliver better projects, faster.</p>
+                        <div>
+                            <a class="btn cta-button cta-primary px-4 py-2 px-md-5 py-md-3 m-1 m-md-2" asp-area="Identity" asp-page="/Account/Register" role="button">
+                                <i class="bi bi-rocket-takeoff me-2"></i>Start Free Trial
+                            </a>
+                            <a class="btn cta-button cta-secondary px-4 py-2 px-md-5 py-md-3 m-1 m-md-2" href="#contact" role="button">
+                                <i class="bi bi-envelope me-2"></i>Contact Sales
+                            </a>
+                        </div>
+                    </div>
+                </section>
 
-           </div>
-        </div>
-    </main>
-</div>
+                <!-- Contact Section -->
+                <section id="contact" class="container py-5 my-5">
+                    <div class="row">
+                        <div class="col-12 col-lg-6 mb-4 mb-lg-0">
+                            <h2 class="display-6 fw-bold mb-3">Get in Touch</h2>
+                            <p class="text-muted mb-4">Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
+
+                            <div class="d-flex align-items-start mb-3">
+                                <div class="text-primary me-3 fs-2">
+                                    <i class="bi bi-envelope"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">Email</h5>
+                                    <p class="text-muted mb-0">
+                                        <a href="mailto:hello@twoishday.com" class="text-decoration-none">hello@twoishday.com</a>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-start mb-3">
+                                <div class="text-primary me-3 fs-2">
+                                    <i class="bi bi-telephone"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">Phone</h5>
+                                    <p class="text-muted mb-0">+1 (555) 123-4567</p>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-start mb-4">
+                                <div class="text-primary me-3 fs-2">
+                                    <i class="bi bi-geo-alt"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">Office</h5>
+                                    <p class="text-muted mb-0">123 Business St, Suite 100<br>San Francisco, CA 94107</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-lg-6">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body p-4">
+                                    <form>
+                                        <div class="mb-3">
+                                            <label for="nameInput" class="form-label">Name</label>
+                                            <input type="text" class="form-control" id="nameInput" placeholder="Your name" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="emailInput" class="form-label">Email</label>
+                                            <input type="email" class="form-control" id="emailInput" placeholder="name@example.com" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="subjectInput" class="form-label">Subject</label>
+                                            <input type="text" class="form-control" id="subjectInput" placeholder="How can we help?" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="messageInput" class="form-label">Message</label>
+                                            <textarea class="form-control" id="messageInput" rows="5" placeholder="Tell us more about your needs..." required></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary w-100" disabled>
+                                            <i class="bi bi-send me-2"></i>Send Message
+                                        </button>
+                                        <p class="text-muted small mt-2 mb-0">
+                                            <i class="bi bi-info-circle me-1"></i>Contact form coming soon. Please email us directly.
+                                        </p>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                                                </section>
+                                    </main>
+                                </div>
+
+                                <script>
+                                    // Smooth scroll for anchor links
+                                    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                                        anchor.addEventListener('click', function (e) {
+                                            const target = document.querySelector(this.getAttribute('href'));
+                                            if (target) {
+                                                e.preventDefault();
+                                                target.scrollIntoView({
+                                                    behavior: 'smooth',
+                                                    block: 'start'
+                                                });
+                                            }
+                                        });
+                                    });
+
+                                    // Animate elements on scroll
+                                    const observerOptions = {
+                                        threshold: 0.1,
+                                        rootMargin: '0px 0px -50px 0px'
+                                    };
+
+                                    const observer = new IntersectionObserver((entries) => {
+                                        entries.forEach(entry => {
+                                            if (entry.isIntersecting) {
+                                                entry.target.classList.add('animate-on-scroll');
+                                                observer.unobserve(entry.target);
+                                            }
+                                        });
+                                    }, observerOptions);
+
+                                    // Observe all cards and sections
+                                    document.querySelectorAll('.card, .how-it-works-step, section').forEach(el => {
+                                        observer.observe(el);
+                                    });
+                                </script>

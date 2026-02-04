@@ -323,6 +323,34 @@ This roadmap outlines the complete modernization plan for transforming the curre
 
 ---
 
+## Phase 7: Miscellaneous Improvements
+**Priority**: 🟡 VARIES  
+**Status**: ⚪ Not Started
+
+> This phase captures features, bugs, and improvements discovered during development that don't fit into the main modernization phases.
+
+### 7.1 Layout Improvements
+- [ ] Create separate layout for non-authenticated users (`_PublicLayout.cshtml`)
+  - Keep everything in top navbar (logo, login, register links)
+  - Remove sidebar for public pages (landing page, etc.)
+  - Cleaner, simpler design for marketing pages
+  - Current: Landing page uses authenticated layout with sidebar (jarring experience)
+  - Goal: Professional public-facing layout without application chrome
+
+### 7.2 Authentication & User Experience
+- [ ] TBD - Items to be added as discovered
+
+### 7.3 Bug Fixes
+- [ ] TBD - Items to be added as discovered
+
+### 7.4 Performance Optimizations
+- [ ] TBD - Items to be added as discovered
+
+### 7.5 Accessibility Improvements
+- [ ] TBD - Items to be added as discovered
+
+---
+
 ## 📊 Progress Tracker
 
 | Phase | Status | Progress |
@@ -333,6 +361,7 @@ This roadmap outlines the complete modernization plan for transforming the curre
 | Phase 4: Backend Improvements | ⚪ Not Started | 0% |
 | Phase 5: Blazor Frontend | ⚪ Not Started | 0% |
 | Phase 6: .NET Upgrade | ✅ **COMPLETE** | **100%** |
+| Phase 7: Miscellaneous | ⚪ Not Started | 0% |
 
 ---
 

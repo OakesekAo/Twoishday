@@ -678,9 +678,570 @@ Before submitting code, verify:
 - [ASP.NET Core Tag Helpers](https://docs.microsoft.com/en-us/aspnet/core/mvc/views/tag-helpers/intro)
 - [Font Awesome Icons](https://fontawesome.com/icons)
 - [Bootstrap Icons](https://icons.getbootstrap.com/)
+- [Chart.js Documentation](https://www.chartjs.org/docs/latest/)
+
+---
+
+## 1️⃣6️⃣ Empty State Pattern
+
+### ✅ DO: Provide User-Friendly Empty States
+
+```html
+<!-- Empty state with icon and message -->
+<div class="empty-state">
+    <i class="fas fa-inbox"></i>
+    <p>No tickets assigned to you</p>
+</div>
+
+<!-- Empty state with call-to-action -->
+<div class="empty-state">
+    <i class="fas fa-folder-open"></i>
+    <p>No projects found</p>
+    <a asp-controller="Projects" asp-action="Create" class="btn btn-primary mt-2">
+        <i class="fas fa-plus me-1"></i> Create Your First Project
+    </a>
+</div>
+
+<!-- Conditional rendering with empty state -->
+@if (Model.Tickets != null && Model.Tickets.Any())
+{
+    <ul class="ticket-list">
+        @foreach (var ticket in Model.Tickets)
+        {
+            <li>@ticket.Title</li>
+        }
+    </ul>
+}
+else
+{
+    <div class="empty-state">
+        <i class="fas fa-ticket-alt"></i>
+        <p>No tickets available</p>
+    </div>
+}
+```
+
+### ✅ Empty State CSS
+
+```css
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: #858796;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+}
+
+.empty-state p {
+    margin-bottom: 0;
+}
+```
+
+### ❌ DON'T: Leave Empty Sections Blank
+
+```html
+<!-- DON'T DO THIS -->
+@if (Model.Tickets.Any())
+{
+    <!-- Show tickets -->
+}
+<!-- ⛔ Nothing shown when empty - confusing UX -->
+```
+
+---
+
+## 1️⃣7️⃣ Chart.js Integration
+
+### ✅ DO: Use Chart.js for Data Visualization
+
+```razor
+@* In the View *@
+<div class="chart-container">
+    <canvas id="myChart"></canvas>
+</div>
+
+@section Scripts {
+    <script>
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [@Html.Raw(string.Join(",", Model.Labels.Select(l => $"'{l}'")))],
+                datasets: [{
+                    label: 'Dataset',
+                    data: [@Html.Raw(string.Join(",", Model.Data))],
+                    backgroundColor: '#4e73df'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+}
+```
+
+### ✅ Chart Container CSS
+
+```css
+.chart-container {
+    position: relative;
+    height: 300px;
+}
+
+@media (max-width: 768px) {
+    .chart-container {
+        height: 250px;
+    }
+}
+```
+
+### ✅ Chart Types
+
+```javascript
+// Doughnut Chart (for proportions)
+type: 'doughnut'
+
+// Bar Chart (for comparisons)
+type: 'bar'
+
+// Line Chart (for trends)
+type: 'line'
+
+// Pie Chart (avoid - use doughnut instead)
+type: 'pie'  // ⚠️ Doughnut is more modern
+```
+
+---
+
+## 1️⃣8️⃣ Feature-Specific CSS Files
+
+### ✅ DO: Create Separate CSS Files for Features
+
+```html
+<!-- In the view -->
+@section Styles {
+    <link href="~/css/dashboard.css" rel="stylesheet" asp-append-version="true" />
+}
+```
+
+**File Structure:**
+```
+wwwroot/css/
+├── site.css          (global styles)
+├── sb-admin-2.min.css (theme)
+├── landing.css       (landing page)
+├── dashboard.css     (dashboard)
+├── projects.css      (projects feature)
+└── tickets.css       (tickets feature)
+```
+
+### ✅ CSS File Organization
+
+```css
+/* dashboard.css */
+
+/* ===== KPI Cards ===== */
+.kpi-card { }
+
+/* ===== Charts ===== */
+.chart-container { }
+
+/* ===== Activity Feed ===== */
+.activity-feed { }
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    /* Mobile styles */
+}
+```
+
+### ❌ DON'T: Put Everything in site.css
+
+```css
+/* DON'T DO THIS */
+/* site.css with 5000+ lines mixing all features */  ⛔
+```
+
+---
+
+## 1️⃣9️⃣ KPI/Metric Card Pattern
+
+### ✅ DO: Use Gradient Cards for Metrics
+
+```html
+<div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+    <div class="card kpi-card kpi-card-primary shadow">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="kpi-value">@Model.TotalProjects</div>
+                    <div class="kpi-label">Total Projects</div>
+                </div>
+                <div class="kpi-icon">
+                    <i class="fas fa-folder"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+```
+
+### ✅ KPI Card CSS
+
+```css
+.kpi-card {
+    border-radius: 0.5rem;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border: none;
+}
+
+.kpi-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.kpi-value {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.kpi-label {
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+.kpi-icon {
+    font-size: 2rem;
+    opacity: 0.3;
+}
+
+/* Gradient colors */
+.kpi-card-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+```
+
+---
+
+## 2️⃣0️⃣ Badge Color System
+
+### ✅ DO: Use Consistent Badge Colors
+
+```html
+<!-- Status badges -->
+<span class="badge badge-status-new">New</span>
+<span class="badge badge-status-in-progress">In Progress</span>
+<span class="badge badge-status-resolved">Resolved</span>
+<span class="badge badge-status-closed">Closed</span>
+
+<!-- Priority badges -->
+<span class="badge badge-priority-urgent">Urgent</span>
+<span class="badge badge-priority-high">High</span>
+<span class="badge badge-priority-medium">Medium</span>
+<span class="badge badge-priority-low">Low</span>
+```
+
+### ✅ Badge CSS
+
+```css
+/* Status Badges */
+.badge-status-new {
+    background-color: #1cc88a;
+}
+
+.badge-status-in-progress {
+    background-color: #36b9cc;
+}
+
+.badge-status-resolved {
+    background-color: #858796;
+}
+
+.badge-status-closed {
+    background-color: #5a5c69;
+}
+
+/* Priority Badges */
+.badge-priority-urgent {
+    background-color: #e74a3b;
+}
+
+.badge-priority-high {
+    background-color: #f6c23e;
+}
+
+.badge-priority-medium {
+    background-color: #36b9cc;
+}
+
+.badge-priority-low {
+    background-color: #858796;
+}
+```
+
+### ✅ Dynamic Badge Classes
+
+```csharp
+<!-- Convert status name to CSS class -->
+<span class="badge badge-status-@ticket.TicketStatus.Name.ToLower().Replace(" ", "-")">
+    @ticket.TicketStatus.Name
+</span>
+
+<!-- Convert priority to CSS class -->
+<span class="badge badge-priority-@ticket.TicketPriority.Name.ToLower()">
+    @ticket.TicketPriority.Name
+</span>
+```
+
+### ❌ DON'T: Use Generic Badge Colors
+
+```html
+<!-- DON'T DO THIS -->
+<span class="badge bg-success">@status</span>  ⛔ Not semantic
+<span class="badge bg-primary">@priority</span>  ⛔ Not consistent
+```
+
+---
+
+## 2️⃣1️⃣ Activity Feed/Timeline Pattern
+
+### ✅ DO: Use Timeline Design for Activity
+
+```html
+<ul class="activity-feed">
+    @foreach (var activity in Model.RecentActivity)
+    {
+        <li class="activity-feed-item status-@activity.Status.ToLower()">
+            <div class="activity-feed-content">
+                <strong>@activity.Title</strong>
+                <br />
+                <small class="text-muted">@activity.Description</small>
+            </div>
+            <div class="activity-feed-time">
+                @activity.Timestamp.ToString("MMM dd, yyyy h:mm tt")
+            </div>
+        </li>
+    }
+</ul>
+```
+
+### ✅ Activity Feed CSS
+
+```css
+.activity-feed {
+    list-style: none;
+    padding-left: 0;
+}
+
+.activity-feed-item {
+    position: relative;
+    padding-bottom: 1.5rem;
+    padding-left: 2rem;
+    border-left: 2px solid #e3e6f0;
+}
+
+.activity-feed-item:last-child {
+    border-left-color: transparent;
+}
+
+.activity-feed-item::before {
+    content: '';
+    position: absolute;
+    left: -6px;
+    top: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #4e73df;
+    border: 2px solid white;
+}
+
+/* Color-coded by status */
+.activity-feed-item.status-new::before {
+    background-color: #1cc88a;
+}
+```
+
+---
+
+## 2️⃣2️⃣ Dictionary to Chart Data Binding
+
+### ✅ DO: Use Html.Raw for Safe Binding
+
+```csharp
+@* In Controller *@
+model.ChartData = items
+    .GroupBy(i => i.Category)
+    .ToDictionary(g => g.Key, g => g.Count());
+
+@* In View - Labels *@
+labels: [@Html.Raw(string.Join(",", Model.ChartData.Keys.Select(k => $"'{k}'")))]
+
+@* In View - Data *@
+data: [@Html.Raw(string.Join(",", Model.ChartData.Values))]
+```
+
+### ❌ DON'T: Use @Model Directly in JavaScript
+
+```javascript
+// DON'T DO THIS
+labels: @Model.Labels  ⛔ Won't serialize properly
+data: @Model.Data      ⛔ Wrong format
+```
+
+---
+
+## 2️⃣3️⃣ User-Scoped Data Retrieval
+
+### ✅ DO: Use UserManager and Service Methods
+
+```csharp
+// In Controller
+private readonly UserManager<TDUser> _userManager;
+private readonly ITDProjectService _projectService;
+private readonly ITDTicketService _ticketService;
+
+public async Task<IActionResult> Dashboard()
+{
+    // Get user ID with UserManager
+    string userId = _userManager.GetUserId(User);
+    int companyId = User.Identity.GetCompanyId().Value;
+
+    // Get user-scoped data with service methods
+    List<Project> userProjects = await _projectService.GetUserProjectsAsync(userId);
+    List<Ticket> userTickets = await _ticketService.GetTicketsByUserIdAsync(userId, companyId);
+
+    return View(model);
+}
+```
+
+### ❌ DON'T: Use Claims Directly or Company-Wide Data
+
+```csharp
+// DON'T DO THIS
+string userId = User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;  ⛔
+
+// DON'T DO THIS - Shows ALL company data instead of user's
+List<Project> allProjects = await _companyInfoService.GetAllProjectsAsync(companyId);  ⛔
+List<Ticket> allTickets = allProjects.SelectMany(p => p.Tickets).ToList();  ⛔
+```
+
+### ✅ Pattern: Dashboard Data Scoping
+
+```csharp
+// Dashboard should show USER's data, not company-wide
+model.Projects = await _projectService.GetUserProjectsAsync(userId);
+model.Tickets = await _ticketService.GetTicketsByUserIdAsync(userId, companyId);
+
+// Calculate KPIs from user's data only
+model.TotalProjects = model.Projects.Count;
+model.OpenTickets = model.Tickets.Count(t => t.TicketStatus.Name != "Resolved");
+```
+
+---
+
+## 2️⃣4️⃣ Clickable KPI Cards
+
+### ✅ DO: Wrap Cards in Links
+
+```html
+<!-- Clickable KPI card -->
+<div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+    <a asp-controller="Projects" asp-action="MyProjects" class="text-decoration-none">
+        <div class="card kpi-card kpi-card-primary shadow">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="kpi-value">@Model.TotalProjects</div>
+                        <div class="kpi-label">My Projects</div>
+                    </div>
+                    <div class="kpi-icon">
+                        <i class="fas fa-folder"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </a>
+</div>
+```
+
+### ✅ CSS for Clickable Cards
+
+```css
+/* Clickable card links */
+a:has(.kpi-card) {
+    display: block;
+}
+
+a:has(.kpi-card):hover .kpi-card {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+```
+
+### ❌ DON'T: Use JavaScript for Navigation
+
+```html
+<!-- DON'T DO THIS -->
+<div class="card" onclick="window.location='/Projects/MyProjects'">  ⛔
+```
+
+---
+
+## ✅ Updated Code Review Checklist
+
+Before submitting code, verify:
+
+- [ ] Bootstrap 5 classes used (no Bootstrap 4)
+- [ ] Semantic HTML elements
+- [ ] ARIA labels where appropriate
+- [ ] Responsive breakpoints tested
+- [ ] Dynamic active states (no static "active" class)
+- [ ] Role-based rendering uses `nameof(Roles.xxx)`
+- [ ] CSS organized with section comments
+- [ ] Transitions use 0.3s ease-in-out
+- [ ] Focus states visible
+- [ ] No inline styles (except rare cases)
+- [ ] No !important (except rare cases)
+- [ ] Comments explain intent, not implementation
+- [ ] Null checks before property access
+- [ ] Fallbacks for images/data
+- [ ] **Empty states for all dynamic lists/sections**
+- [ ] **Feature-specific CSS in separate file**
+- [ ] **Chart.js properly initialized in Scripts section**
+- [ ] **Badge colors follow system (status/priority)**
+- [ ] **Dictionary data properly bound with Html.Raw**
+- [ ] **User ID retrieved with `_userManager.GetUserId(User)`**
+- [ ] **Data scoped to user (not company-wide) where appropriate**
+- [ ] **KPI cards wrapped in `<a>` tags for navigation**
+
+---
+
+## 📚 References
+
+- [Bootstrap 5 Documentation](https://getbootstrap.com/docs/5.3/)
+- [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
+- [ASP.NET Core Tag Helpers](https://docs.microsoft.com/en-us/aspnet/core/mvc/views/tag-helpers/intro)
+- [Font Awesome Icons](https://fontawesome.com/icons)
+- [Bootstrap Icons](https://icons.getbootstrap.com/)
+- [Chart.js Documentation](https://www.chartjs.org/docs/latest/)
 
 ---
 
 *Established: Phase 1.1*  
-*Version: 1.0*  
+*Updated: Phase 1.3 (Dashboard patterns added)*  
+*Version: 1.1*  
 *Status: Active - To be updated as new patterns emerge*

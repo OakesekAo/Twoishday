@@ -1,0 +1,259 @@
+/* Dashboard Styles */
+
+/* KPI Cards */
+.kpi-card {
+    border-radius: 0.5rem;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border: none;
+    overflow: hidden;
+}
+
+/* Clickable card links */
+a:has(.kpi-card) {
+    display: block;
+}
+
+a:has(.kpi-card):hover .kpi-card {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Non-clickable cards still get hover */
+.kpi-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.kpi-card .card-body {
+    padding: 1.5rem;
+}
+
+.kpi-icon {
+    font-size: 2rem;
+    opacity: 0.3;
+}
+
+.kpi-value {
+    font-size: 2rem;
+    font-weight: bold;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+.kpi-label {
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.8;
+    margin-bottom: 0;
+}
+
+/* KPI Card Colors */
+.kpi-card-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.kpi-card-success {
+    background: linear-gradient(135deg, #5ee7df 0%, #b490ca 100%);
+    color: white;
+}
+
+.kpi-card-warning {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+}
+
+.kpi-card-danger {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    color: white;
+}
+
+.kpi-card-info {
+    background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+    color: white;
+}
+
+.kpi-card-secondary {
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    color: #333;
+}
+
+/* Chart Cards */
+.chart-card {
+    border-radius: 0.5rem;
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: box-shadow 0.2s ease-in-out;
+}
+
+.chart-card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.chart-card .card-header {
+    background-color: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+    font-weight: 600;
+    padding: 1rem 1.5rem;
+}
+
+.chart-card .card-body {
+    padding: 1.5rem;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+}
+
+/* Activity Feed */
+.activity-feed {
+    list-style: none;
+    padding-left: 0;
+}
+
+.activity-feed-item {
+    position: relative;
+    padding-bottom: 1.5rem;
+    padding-left: 2rem;
+    border-left: 2px solid #e3e6f0;
+}
+
+.activity-feed-item:last-child {
+    border-left-color: transparent;
+    padding-bottom: 0;
+}
+
+.activity-feed-item::before {
+    content: '';
+    position: absolute;
+    left: -6px;
+    top: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #4e73df;
+    border: 2px solid white;
+}
+
+.activity-feed-item.status-new::before {
+    background-color: #1cc88a;
+}
+
+.activity-feed-item.status-in-progress::before {
+    background-color: #36b9cc;
+}
+
+.activity-feed-item.status-resolved::before {
+    background-color: #858796;
+}
+
+.activity-feed-time {
+    font-size: 0.75rem;
+    color: #858796;
+}
+
+.activity-feed-content {
+    font-size: 0.875rem;
+}
+
+/* Quick Ticket List */
+.quick-ticket-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.quick-ticket-item {
+    padding: 0.75rem;
+    border-bottom: 1px solid #e3e6f0;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.quick-ticket-item:last-child {
+    border-bottom: none;
+}
+
+.quick-ticket-item:hover {
+    background-color: #f8f9fc;
+}
+
+.quick-ticket-title {
+    font-weight: 600;
+    color: #5a5c69;
+    margin-bottom: 0.25rem;
+}
+
+.quick-ticket-meta {
+    font-size: 0.75rem;
+    color: #858796;
+}
+
+/* Badge Styles for Status and Priority */
+.badge-status-new {
+    background-color: #1cc88a;
+}
+
+.badge-status-in-progress {
+    background-color: #36b9cc;
+}
+
+.badge-status-resolved {
+    background-color: #858796;
+}
+
+.badge-status-closed {
+    background-color: #5a5c69;
+}
+
+.badge-priority-urgent {
+    background-color: #e74a3b;
+}
+
+.badge-priority-high {
+    background-color: #f6c23e;
+}
+
+.badge-priority-medium {
+    background-color: #36b9cc;
+}
+
+.badge-priority-low {
+    background-color: #858796;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .kpi-value {
+        font-size: 1.5rem;
+    }
+    
+    .kpi-icon {
+        font-size: 1.5rem;
+    }
+    
+    .chart-container {
+        height: 250px;
+    }
+    
+    .kpi-card .card-body {
+        padding: 1rem;
+    }
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: #858796;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+}
+
+.empty-state p {
+    margin-bottom: 0;
+}

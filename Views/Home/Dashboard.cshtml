@@ -7,212 +7,464 @@
 
 @{
     ViewData["Title"] = "Dashboard";
-    @* Instantiate the btUser *@
     TDUser tdUser = await UserManager.GetUserAsync(User);
-
 }
 
-<h1>Dashboard</h1>
-<a href="javascript:void(0);">
-    @* User Info *@
-    @*avatar info*@
-    @if (tdUser?.AvatarFileDate != null)
-    {
-        <img class="media-object" style="width:30px;height:30px;" src="data:image/*;base64,@(Convert.ToBase64String(tdUser.AvatarFileDate))" alt="">
-    }
-    else
-    {
-        <img class="media-object" style="width:30px;height:30px;" src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" alt="">
-    }
-</a>
-@* Get The btUser FullName *@
-<strong>@tdUser.FullName</strong>
-<span class="text-muted" style="font-size:x-small;">
-    @* Company Name *@
-    <strong>@Model.Company.Name</strong>
-</span>
+@section Styles {
+    <link href="~/css/dashboard.css" rel="stylesheet" asp-append-version="true" />
+}
 
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+        <p class="text-muted mb-0">Welcome back, <strong>@tdUser.FullName</strong></p>
+    </div>
+    <div class="d-none d-md-block">
+        <span class="text-muted small">
+            <i class="fas fa-building"></i> @Model.Company.Name
+        </span>
+    </div>
+</div>
 
-<div>
-    @*<div classxfont-weighteighteightgetainer-fluid">
-        <div class="row gy-2">
-            <div class="col-md-12 col">
-                <div class="row col-cols-4 mt-5 bg-secondary">
-                    <div class="card col m-1 p-2">
-                        <div class="card-body">
-                            <h5>Chart 1</h5>
-                            <p>[Projects]</p>
+@* KPI Cards Row *@
+<div class="row g-3 mb-4">
+    @* Total Projects *@
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+        <a asp-controller="Projects" asp-action="MyProjects" class="text-decoration-none">
+            <div class="card kpi-card kpi-card-primary shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="kpi-value">@Model.TotalProjects</div>
+                            <div class="kpi-label">My Projects</div>
                         </div>
-                    </div>
-                    <div class="card col m-1 p-2">
-                        <div class="card-body">
-                            <h5>Chart 2</h5>
-                            <p>[Projects]</p>
-                        </div>
-                    </div>
-                    <div class="card col m-1 p-2">
-                        <div class="card-body">
-                            <h5>Chart 3</h5>
-                            <p>[Tickets]</p>
-                        </div>
-                    </div>
-                    <div class="card col m-1 p-2">
-                        <div class="card-body">
-                            <h5>Chart 4</h5>
-                            <p>[Tickets]</p>
+                        <div class="kpi-icon">
+                            <i class="fas fa-folder"></i>
                         </div>
                     </div>
                 </div>
+            </div>
+        </a>
+    </div>
+
+    @* Total Tickets *@
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+        <a asp-controller="Tickets" asp-action="MyTickets" class="text-decoration-none">
+            <div class="card kpi-card kpi-card-success shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="kpi-value">@Model.TotalTickets</div>
+                            <div class="kpi-label">My Tickets</div>
+                        </div>
+                        <div class="kpi-icon">
+                            <i class="fas fa-ticket-alt"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    @* Open Tickets *@
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+        <a asp-controller="Tickets" asp-action="MyTickets" class="text-decoration-none">
+            <div class="card kpi-card kpi-card-info shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="kpi-value">@Model.OpenTickets</div>
+                            <div class="kpi-label">Open Tickets</div>
+                        </div>
+                        <div class="kpi-icon">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    @* Closed Tickets *@
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+        <a asp-controller="Tickets" asp-action="MyTickets" class="text-decoration-none">
+            <div class="card kpi-card kpi-card-secondary shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="kpi-value">@Model.ClosedTickets</div>
+                            <div class="kpi-label">Closed Tickets</div>
+                        </div>
+                        <div class="kpi-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    @* In Progress Tickets *@
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+        <a asp-controller="Tickets" asp-action="MyTickets" class="text-decoration-none">
+            <div class="card kpi-card kpi-card-warning shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="kpi-value">@Model.InProgressTickets</div>
+                            <div class="kpi-label">In Progress</div>
+                        </div>
+                        <div class="kpi-icon">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    @* Unassigned Tickets *@
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+        <a asp-controller="Tickets" asp-action="MyTickets" class="text-decoration-none">
+            <div class="card kpi-card kpi-card-danger shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="kpi-value">@Model.UnassignedTickets</div>
+                            <div class="kpi-label">Unassigned</div>
+                        </div>
+                        <div class="kpi-icon">
+                            <i class="fas fa-user-slash"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+@* Charts Row *@
+<div class="row g-3 mb-4">
+    @* Tickets by Status Chart *@
+    <div class="col-12 col-lg-6">
+        <div class="card chart-card shadow">
+            <div class="card-header">
+                <i class="fas fa-chart-pie me-1"></i> Tickets by Status
+            </div>
+            <div class="card-body">
+                @if (Model.TicketsByStatus != null && Model.TicketsByStatus.Any())
+                {
+                    <div class="chart-container">
+                        <canvas id="ticketsByStatusChart"></canvas>
+                    </div>
+                }
+                else
+                {
+                    <div class="empty-state">
+                        <i class="fas fa-chart-pie"></i>
+                        <p>No ticket data available</p>
+                    </div>
+                }
             </div>
         </div>
-        <div class="row gy-2">
-            <div class="cols mt-5 bg-secondary">
-                <div class="card col m-1 p-2">
-                    <div class="card-body" style="height:380px">
-                        <h5>Chart 5</h5>
-                        <p>[Projects: Tickets vs Developers]</p>
-                    </div>
-                </div>
+    </div>
+
+    @* Tickets by Priority Chart *@
+    <div class="col-12 col-lg-6">
+        <div class="card chart-card shadow">
+            <div class="card-header">
+                <i class="fas fa-chart-bar me-1"></i> Tickets by Priority
             </div>
-        </div>
-    </div>*@
-    <hr />
-    <div class="mt-5 ">
-        <div class="row">
-            @* Projects Table *@
-            <div class="col">
-                <div class="bg-secondary">
-                    <div class="card m-1 p-2">
-                        <div class="card-header">
-                            <h2>Projects</h2>
-                        </div>
-                        <div class="card-body">
-                            @* [Copy and format table from Unassigned Tickets] *@
-                            <div class="table-responsive" style="overflow-y:auto;height:600px;">
-                                <table class="table table-hover">
-                                    <thead class="">
-                                        <tr>
-                                            @* Table header *@
-                                            <th>Name</th>
-                                            <th>StartDate</th>
-                                            <th>EndDate</th>
-                                            <th>Priority</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @* Table body *@
-                                        @foreach (var project in Model.Projects.OrderByDescending(d => d.EndDate))
-                                        {
-                                            <tr>
-                                                <td><a asp-action="Details" asp-controller="Projects" asp-route-id="@project.Id" style="color:black"><strong>@project.Name</strong></a></td>
-                                                <td><span style="font-size:small">@project.StartDate.ToString("MM.dd.yyy")</span></td>
-                                                <td><span style="font-size:small">@project.EndDate.ToString("MM.dd.yyy")</span></td>
-                                                <td><span class="badge bg-dark">@project.ProjectPriority.Name</span></td>
-                                                <td>
-                                                    <a class="btn btn-sm btn-outline-secondary" asp-action="Details" asp-controller="Projects" asp-route-id="@project.Id"><i class="fs-5 bi-justify"></i></a>
-                                                </td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
-
-                        </div>
-                        <div class="card-footer">
-                        </div>
+            <div class="card-body">
+                @if (Model.TicketsByPriority != null && Model.TicketsByPriority.Any())
+                {
+                    <div class="chart-container">
+                        <canvas id="ticketsByPriorityChart"></canvas>
                     </div>
-                </div>
-            </div>
-            @* Tickets Table *@
-            <div class="col">
-                <div class="bg-secondary">
-                    <div class="card m-1 p-2">
-                        <div class="card-header">
-                            <h2>Tickets</h2>
-                        </div>
-                        <div class="card-body">
-
-                            @* Copy and format table from Unassigned Tickets *@
-                            <div class="table-responsive" style="overflow-y:auto;height:600px;">
-                                <table class="table table-hover">
-                                    <thead class="">
-                                        <tr>
-                                            @* Table header *@
-                                            <th>Title</th>
-                                            <th>Developer</th>
-                                            <th>Status</th>
-                                            <th>Priority</th>
-                                            <th>Date</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @* Table body *@
-                                        @foreach (var ticket in Model.Tickets.OrderByDescending(d => d.Created))
-                                        {
-                                            <tr>
-                                                <td><a asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id" style="color:black"><strong>@ticket.Title</strong></a> </td>
-                                                <td>
-                                                    @if (ticket.DeveloperUserId != null)
-                                                    {
-                                                        @ticket.DeveloperUser?.FullName
-                                                    }
-                                                    else
-                                                    {
-                                                        <span class="badge bg-warning text-dark">Unassigned </span>
-                                                    }
-                                                </td>
-                                                @if (ticket.TicketStatus.Name == "New")
-                                                {
-                                                    <td><span class="badge bg-success rounded-pill">@ticket.TicketStatus.Name </span></td>
-
-                                                }
-                                                else
-                                                {
-                                                    <td><span class="badge bg-success rounded-pill">@ticket.TicketStatus.Name </span></td>
-                                                }
-                                                <td><span class="badge bg-success rounded-pill">@ticket.TicketPriority.Name </span></td>
-                                                <td>@ticket.Created.ToString("MM.dd.yyyy")</td>
-                                                <td>
-                                                    <a class="btn btn-sm btn-outline-secondary" asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id"><i class="fs-5 bi-justify"></i></a>
-                                                </td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-
-                            </div>
-
-
-                        </div>
-                        <div class="card-footer">
-                        </div>
+                }
+                else
+                {
+                    <div class="empty-state">
+                        <i class="fas fa-chart-bar"></i>
+                        <p>No ticket data available</p>
                     </div>
-                </div>
-            </div>
-            <div class="col-md-2 ">
-                <div class="bg-dark">
-                    <div class="card m-1 p-2">
-                        <div class="card-header">
-                            <h2>Members</h2>
-                            <hr />
-                        </div>
-                        <div class="card-body" style="overflow-y:auto;height:600px;background-color:antiquewhite">
-                            @* Loop over Company members. Display Name and Role *@
-                            @foreach (TDUser member in Model.Members)
-                            {
-                                <div class="">
-                                    <span class="date" style="font-weight:bold">@member.FullName</span>
-                                    <h6>@((await RolesService.GetUserRolesAsync(member)).FirstOrDefault())</h6>
-                                </div>
-                                <hr />
-                            }
-
-                        </div>
-                    </div>
-                </div>
+                }
             </div>
         </div>
     </div>
 </div>
+
+@* Content Row *@
+<div class="row g-3 mb-4">
+    @* My Assigned Tickets *@
+    <div class="col-12 col-lg-6">
+        <div class="card chart-card shadow">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-user-check me-1"></i> My Assigned Tickets</span>
+                <a asp-controller="Tickets" asp-action="MyTickets" class="btn btn-sm btn-primary">View All</a>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.MyAssignedTickets != null && Model.MyAssignedTickets.Any())
+                {
+                    <ul class="quick-ticket-list">
+                        @foreach (var ticket in Model.MyAssignedTickets)
+                        {
+                            <li class="quick-ticket-item">
+                                <a asp-controller="Tickets" asp-action="Details" asp-route-id="@ticket.Id" class="text-decoration-none">
+                                    <div class="quick-ticket-title">@ticket.Title</div>
+                                    <div class="quick-ticket-meta">
+                                        <span class="badge badge-status-@ticket.TicketStatus.Name.ToLower().Replace(" ", "-")">
+                                            @ticket.TicketStatus.Name
+                                        </span>
+                                        <span class="badge badge-priority-@ticket.TicketPriority.Name.ToLower()">
+                                            @ticket.TicketPriority.Name
+                                        </span>
+                                        <span class="ms-2">
+                                            <i class="far fa-clock"></i> @ticket.Created.ToString("MMM dd, yyyy")
+                                        </span>
+                                    </div>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>No tickets assigned to you</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    @* Recent Activity *@
+    <div class="col-12 col-lg-6">
+        <div class="card chart-card shadow">
+            <div class="card-header">
+                <i class="fas fa-history me-1"></i> Recent Activity
+            </div>
+            <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                @if (Model.RecentTickets != null && Model.RecentTickets.Any())
+                {
+                    <ul class="activity-feed">
+                        @foreach (var ticket in Model.RecentTickets)
+                        {
+                            <li class="activity-feed-item status-@ticket.TicketStatus.Name.ToLower().Replace(" ", "-")">
+                                <div class="activity-feed-content">
+                                    <a asp-controller="Tickets" asp-action="Details" asp-route-id="@ticket.Id" class="text-decoration-none">
+                                        <strong>@ticket.Title</strong>
+                                    </a>
+                                    <br />
+                                    <small class="text-muted">
+                                        @ticket.Project.Name
+                                        @if (ticket.DeveloperUser != null)
+                                        {
+                                            <span> • Assigned to @ticket.DeveloperUser.FullName</span>
+                                        }
+                                    </small>
+                                </div>
+                                <div class="activity-feed-time">
+                                    @((ticket.Updated ?? ticket.Created).ToString("MMM dd, yyyy h:mm tt"))
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <div class="empty-state">
+                        <i class="fas fa-stream"></i>
+                        <p>No recent activity</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Projects and Members Row *@
+<div class="row g-3">
+    @* Projects Table *@
+    <div class="col-12 col-lg-8">
+        <div class="card chart-card shadow">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-folder me-1"></i> Active Projects</span>
+                <a asp-controller="Projects" asp-action="AllProjects" class="btn btn-sm btn-primary">View All</a>
+            </div>
+            <div class="card-body">
+                @if (Model.Projects != null && Model.Projects.Any())
+                {
+                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                        <table class="table table-hover">
+                            <thead class="table-light sticky-top">
+                                <tr>
+                                    <th>Name</th>
+                                    <th class="d-none d-md-table-cell">Start Date</th>
+                                    <th class="d-none d-lg-table-cell">End Date</th>
+                                    <th>Priority</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var project in Model.Projects.OrderByDescending(d => d.EndDate))
+                                {
+                                    <tr>
+                                        <td>
+                                            <a asp-controller="Projects" asp-action="Details" asp-route-id="@project.Id" class="text-decoration-none">
+                                                <strong>@project.Name</strong>
+                                            </a>
+                                        </td>
+                                        <td class="d-none d-md-table-cell">
+                                            <small>@project.StartDate.ToString("MMM dd, yyyy")</small>
+                                        </td>
+                                        <td class="d-none d-lg-table-cell">
+                                            <small>@project.EndDate.ToString("MMM dd, yyyy")</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-dark">@project.ProjectPriority?.Name</span>
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-sm btn-outline-secondary" asp-controller="Projects" asp-action="Details" asp-route-id="@project.Id">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="empty-state">
+                        <i class="fas fa-folder-open"></i>
+                        <p>No projects assigned to you</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    @* Team Members *@
+    <div class="col-12 col-lg-4">
+        <div class="card chart-card shadow">
+            <div class="card-header">
+                <i class="fas fa-users me-1"></i> Team Members
+            </div>
+            <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                @if (Model.Members != null && Model.Members.Any())
+                {
+                    @foreach (TDUser member in Model.Members)
+                    {
+                        <div class="d-flex align-items-center mb-3 pb-3 border-bottom">
+                            <div class="me-3">
+                                @if (member?.AvatarFileDate != null)
+                                {
+                                    <img class="rounded-circle" style="width:40px;height:40px;object-fit:cover;" src="data:image/*;base64,@(Convert.ToBase64String(member.AvatarFileDate))" alt="@member.FullName">
+                                }
+                                else
+                                {
+                                    <img class="rounded-circle" style="width:40px;height:40px;object-fit:cover;" src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" alt="@member.FullName">
+                                }
+                            </div>
+                            <div>
+                                <div class="fw-bold">@member.FullName</div>
+                                <small class="text-muted">@((await RolesService.GetUserRolesAsync(member)).FirstOrDefault())</small>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="empty-state">
+                        <i class="fas fa-users"></i>
+                        <p>No team members found</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Tickets by Status Chart
+        @if (Model.TicketsByStatus != null && Model.TicketsByStatus.Any())
+        {
+            <text>
+            var statusCtx = document.getElementById('ticketsByStatusChart').getContext('2d');
+            var statusChart = new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: [@Html.Raw(string.Join(",", Model.TicketsByStatus.Keys.Select(k => $"'{k}'")))],
+                    datasets: [{
+                        data: [@Html.Raw(string.Join(",", Model.TicketsByStatus.Values))],
+                        backgroundColor: [
+                            '#1cc88a',
+                            '#36b9cc',
+                            '#858796',
+                            '#5a5c69',
+                            '#4e73df'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        }
+                    }
+                }
+            });
+            </text>
+        }
+
+        // Tickets by Priority Chart
+        @if (Model.TicketsByPriority != null && Model.TicketsByPriority.Any())
+        {
+            <text>
+            var priorityCtx = document.getElementById('ticketsByPriorityChart').getContext('2d');
+            var priorityChart = new Chart(priorityCtx, {
+                type: 'bar',
+                data: {
+                    labels: [@Html.Raw(string.Join(",", Model.TicketsByPriority.Keys.Select(k => $"'{k}'")))],
+                    datasets: [{
+                        label: 'Tickets',
+                        data: [@Html.Raw(string.Join(",", Model.TicketsByPriority.Values))],
+                        backgroundColor: [
+                            '#e74a3b',
+                            '#f6c23e',
+                            '#36b9cc',
+                            '#858796'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+            </text>
+        }
+    </script>
+}

@@ -1,6 +1,7 @@
 ﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
 
+/* ===== Global Styles ===== */
 a.navbar-brand {
   white-space: normal;
   text-align: center;
@@ -24,20 +25,32 @@ a {
   border-color: #1861ac;
 }
 
-/* Sticky footer styles
--------------------------------------------------- */
+/* ===== Sticky footer styles ===== */
 html {
   font-size: 14px;
+  height: 100%;
 }
+
 @media (min-width: 768px) {
   html {
     font-size: 16px;
   }
 }
 
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+#content-wrapper {
+  flex: 1;
+}
+
 .border-top {
   border-top: 1px solid #e5e5e5;
 }
+
 .border-bottom {
   border-bottom: 1px solid #e5e5e5;
 }
@@ -51,21 +64,133 @@ button.accept-policy {
   line-height: inherit;
 }
 
-/* Sticky footer styles
--------------------------------------------------- */
-html {
-  position: relative;
-  min-height: 100%;
+/* ===== Layout Improvements ===== */
+
+/* Sidebar Responsive Fixes */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 0;
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    z-index: 1040;
+    overflow-x: hidden;
+    transition: width 0.3s ease-in-out;
+  }
+
+  .sidebar.toggled {
+    width: 14rem;
+  }
+
+  #content-wrapper {
+    margin-left: 0 !important;
+  }
+
+  /* Mobile hamburger button styling */
+  #sidebarToggleTop {
+    color: #858796;
+  }
+
+  #sidebarToggleTop:hover {
+    color: #4e73df;
+  }
 }
 
-body {
-  /* Margin bottom by footer height */
-  margin-bottom: 60px;
+/* Breadcrumb Styling */
+.breadcrumb {
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
 }
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  white-space: nowrap;
-  line-height: 60px; /* Vertically center the text there */
+
+.breadcrumb-item a {
+  text-decoration: none;
+  color: #4e73df;
+}
+
+.breadcrumb-item a:hover {
+  color: #2e59d9;
+  text-decoration: underline;
+}
+
+.breadcrumb-item.active {
+  color: #858796;
+}
+
+/* Collapse Menu Icons */
+.collapse-item i {
+  font-size: 0.875rem;
+  color: #858796;
+}
+
+/* Active Navigation Improvements */
+.nav-item.active > .nav-link {
+  font-weight: 600;
+}
+
+.nav-link.active {
+  color: #fff !important;
+}
+
+/* Footer Improvements */
+.sticky-footer {
+  padding: 1.5rem 0;
+  background-color: #f8f9fc;
+}
+
+.sticky-footer .copyright {
+  line-height: 1;
+  font-size: 0.875rem;
+  color: #858796;
+}
+
+/* Smooth Transitions */
+.sidebar,
+.collapse {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Responsive Table Wrapper */
+.table-responsive {
+  border-radius: 0.35rem;
+}
+
+/* Mobile Menu Overlay */
+@media (max-width: 768px) {
+  .sidebar::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+    z-index: -1;
+  }
+
+  .sidebar.toggled::before {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+/* Accessibility Improvements */
+.nav-link:focus,
+.btn:focus,
+a:focus {
+  outline: 2px solid #4e73df;
+  outline-offset: 2px;
+}
+
+/* Card Enhancements */
+.card {
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+.card:hover {
+  box-shadow: 0 0.25rem 2rem 0 rgba(58, 59, 69, 0.2);
+  transition: box-shadow 0.3s ease-in-out;
 }

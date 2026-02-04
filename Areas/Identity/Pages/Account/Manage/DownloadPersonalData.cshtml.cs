@@ -42,16 +42,16 @@ namespace Twoishday.Areas.Identity.Pages.Account.Manage
             foreach (var p in personalDataProps)
             {
                 personalData.Add(p.Name, p.GetValue(user)?.ToString() ?? "null");
-            }
+                        }
 
-            var logins = await _userManager.GetLoginsAsync(user);
-            foreach (var l in logins)
-            {
-                personalData.Add($"{l.LoginProvider} external login provider key", l.ProviderKey);
-            }
+                        var logins = await _userManager.GetLoginsAsync(user);
+                        foreach (var l in logins)
+                        {
+                            personalData.Add($"{l.LoginProvider} external login provider key", l.ProviderKey);
+                        }
 
-            Response.Headers.Add("Content-Disposition", "attachment; filename=PersonalData.json");
-            return new FileContentResult(JsonSerializer.SerializeToUtf8Bytes(personalData), "application/json");
-        }
-    }
-}
+                        Response.Headers["Content-Disposition"] = "attachment; filename=PersonalData.json";
+                        return new FileContentResult(JsonSerializer.SerializeToUtf8Bytes(personalData), "application/json");
+                    }
+                }
+            }

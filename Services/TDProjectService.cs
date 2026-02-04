@@ -178,6 +178,7 @@ namespace Twoishday.Services
             {
 
                 List<Project> projects =  await _context.Projects.Where(p => p.CompanyId == companyId && p.Archived == true)
+                                                .Include(p => p.Company)
                                                 .Include(p => p.Members)
                                                 .Include(p => p.Tickets)
                                                     .ThenInclude(t => t.Comments)

@@ -109,14 +109,14 @@ This roadmap outlines the complete modernization plan for transforming the curre
 - **Note**: "Overdue" KPI replaced with "In Progress" - Ticket model lacks DueDate field (will be added in Phase 3.5)
 
 ### 1.4 Projects Views
-- [ ] `AllProjects.cshtml` - Add card/grid view option, improve table
-- [ ] `MyProjects.cshtml` - Add progress indicators
+- [x] `AllProjects.cshtml` - ✅ Add card/grid view option, improve table
+- [x] `MyProjects.cshtml` - ✅ Add progress indicators
 - [ ] `Details.cshtml` - Redesign project overview, add tabs
 - [ ] `Create.cshtml` - Improve form layout, add validation feedback
 - [ ] `Edit.cshtml` - Match Create styling
 - [ ] `AssignMembers.cshtml` - Better member selection UI
 - [ ] `AssignPM.cshtml` - Improve dropdown/search
-- [ ] `ArchivedProjects.cshtml` - Add restore bulk actions
+- [x] `ArchivedProjects.cshtml` - ✅ Add restore bulk actions
 
 ### 1.5 Tickets Views
 - [ ] `AllTickets.cshtml` - Add filtering, sorting, search

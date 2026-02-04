@@ -39,6 +39,19 @@ namespace Twoishday.Controllers
             _companyInfoService = companyInfoService;
         }
 
+        // GET: Projects (Default route - redirects based on role)
+        public IActionResult Index()
+        {
+            // Redirect to appropriate view based on role
+            if (User.IsInRole(nameof(Roles.Admin)) || User.IsInRole(nameof(Roles.ProjectManager)))
+            {
+                return RedirectToAction(nameof(AllProjects));
+            }
+            else
+            {
+                return RedirectToAction(nameof(MyProjects));
+            }
+        }
 
         // GET: MyProjects
         public async Task<IActionResult> MyProjects()
@@ -57,9 +70,11 @@ namespace Twoishday.Controllers
             List<Project> projects = new();
 
             int companyId = User.Identity.GetCompanyId().Value;
+            bool isAdmin = User.IsInRole(nameof(Roles.Admin));
 
             if (User.IsInRole(nameof(Roles.Admin)) || User.IsInRole(nameof(Roles.ProjectManager)))
             {
+                // For Admins, get projects with Company navigation property
                 projects = await _companyInfoService.GetAllProjectsAsync(companyId);
             }
             else

@@ -1,7 +1,7 @@
 /* ===== Projects View Styles ===== */
-/* Note: Priority badges now use Bootstrap classes (bg-danger, bg-warning, bg-info, bg-secondary) */
+/* Bootstrap 5 First Approach - Minimal Custom CSS */
 
-/* Empty State */
+/* ===== Empty State ===== */
 .empty-state {
     text-align: center;
     padding: 3rem 2rem;
@@ -19,39 +19,103 @@
     margin-bottom: 0.5rem;
 }
 
-/* DataTables Customization */
-.dataTables_wrapper .dataTables_filter {
-    margin-bottom: 1rem;
+/* ===== Projects Toolbar (Search/Filter) ===== */
+.projects-toolbar {
+    background-color: #f8f9fc;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
 }
 
-.dataTables_wrapper .dataTables_filter input {
+.search-box {
+    position: relative;
+}
+
+.search-box .search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #858796;
+    pointer-events: none;
+}
+
+.search-box input {
+    padding-left: 2.5rem;
     border: 1px solid #d1d3e2;
-    border-radius: 0.35rem;
-    padding: 0.375rem 0.75rem;
-    margin-left: 0.5rem;
+    border-radius: 0.375rem;
 }
 
-.dataTables_wrapper .dataTables_filter input:focus {
+.search-box input:focus {
     border-color: #4e73df;
-    outline: 0;
     box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
 }
 
-/* Table Improvements */
+.filter-group {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.filter-select {
+    min-width: 150px;
+    border: 1px solid #d1d3e2;
+    border-radius: 0.375rem;
+}
+
+.clear-filters {
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    .filter-group {
+        width: 100%;
+    }
+
+    .filter-select {
+        flex: 1;
+        min-width: auto;
+    }
+}
+
+/* ===== Projects Table ===== */
 .projects-table th {
     background-color: #f8f9fc;
     font-weight: 600;
     font-size: 0.85rem;
     text-transform: uppercase;
     color: #4e73df;
+    border-bottom: 2px solid #e3e6f0;
+}
+
+.projects-table thead th.sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.projects-table thead th.sortable:hover {
+    background-color: #e3e6f0;
+}
+
+.projects-table thead th.sortable i {
+    font-size: 0.75rem;
+    color: #858796;
+}
+
+.projects-table tbody tr {
+    transition: background-color 0.3s ease-in-out;
 }
 
 .projects-table tbody tr:hover {
     background-color: #f8f9fc;
-    transition: background-color 0.3s ease-in-out;
 }
 
-/* Actions Column Styling */
+.projects-table tbody td {
+    vertical-align: middle;
+}
+
+/* Actions Column - No wrapping */
 .projects-table td:last-child {
     white-space: nowrap;
 }
@@ -63,22 +127,18 @@
     }
 }
 
-/* Mobile - Compact Dropdown */
+/* Mobile - Compact Layout */
 @media (max-width: 767px) {
     .projects-table td:last-child {
         min-width: 60px;
     }
 
-    /* Make table more compact on mobile */
     .projects-table th,
     .projects-table td {
         padding: 0.5rem;
         font-size: 0.875rem;
     }
-}
 
-/* Responsive - Empty State */
-@media (max-width: 768px) {
     .empty-state {
         padding: 2rem 1rem;
     }
@@ -88,7 +148,7 @@
     }
 }
 
-/* Accessibility - Focus States */
+/* ===== Accessibility ===== */
 .projects-table a:focus,
 .projects-table .btn:focus {
     outline: 2px solid #4e73df;
@@ -96,7 +156,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .projects-table tbody tr {
-        transition: none;
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
     }
 }

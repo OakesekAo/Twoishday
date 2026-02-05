@@ -1,32 +1,195 @@
 ﻿@model Twoishday.Models.ViewModels.AssignPMViewModel
 
 @{
-    ViewData["Title"] = "Assign PM";
+    ViewData["Title"] = "Assign Project Manager";
 }
 
-<h1> Project : @Model.Project.Name</h1>
+@* Breadcrumb Navigation *@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a asp-controller="Home" asp-action="Dashboard">
+                <i class="fas fa-home"></i> Home
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a asp-controller="Projects" asp-action="AllProjects">Projects</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a asp-controller="Projects" asp-action="Details" asp-route-id="@Model.Project.Id">@Model.Project.Name</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Assign PM</li>
+    </ol>
+</nav>
 
-<h4>Assign Project Manager</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form method="post" asp-action="AssignPM" asp-controller="Projects">
-            <input hidden asp-for="Project.Id" />
-            <h2> @Model.Project.Name</h2>
-            <p> @Model.Project.Description</p>
-
-            <div class="form-group">
-                <lebel class="control-label">Select Project Manager</lebel>
-                <select asp-for="PMID" class="form-control" asp-items="@Model.PMList">
-                    <option></option>
-                </select>
-
-                <input type="submit" value="Assign" class="btn btn-primary" />
-            </div>
-        </form>
+@* Page Header *@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-2 text-gray-800">
+            <i class="fas fa-user-tie me-2"></i>Assign Project Manager
+        </h1>
+        <p class="text-muted mb-0">Select a project manager for <strong>@Model.Project.Name</strong></p>
     </div>
 </div>
 
-<div>
-    <a asp-action="UnassignedProjects">Back to List</a>
+@* Main Form Card *@
+<div class="row">
+    <div class="col-12 col-xl-9">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-user-cog me-1"></i>Project Manager Selection
+                </h6>
+                <span class="badge bg-info">Project: @Model.Project.Name</span>
+            </div>
+            <div class="card-body">
+                <form method="post" asp-action="AssignPM" asp-controller="Projects">
+                    <input type="hidden" asp-for="Project.Id" />
+
+                    @* Instructions *@
+                    <div class="alert alert-info" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Note:</strong> The Project Manager will have full control over this project, including assigning team members, managing tickets, and overseeing project progress.
+                    </div>
+
+                    @* PM Selection *@
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <label asp-for="PMID" class="form-label fw-bold">
+                                Select Project Manager <span class="text-danger">*</span>
+                                <i class="fas fa-question-circle text-muted ms-1" 
+                                   data-bs-toggle="tooltip" 
+                                   data-bs-placement="right" 
+                                   title="Choose a project manager who will be responsible for overseeing this project and managing the team."></i>
+                            </label>
+                            <select asp-for="PMID" class="form-select" asp-items="@Model.PMList" required>
+                                <option value="">-- Select Project Manager --</option>
+                            </select>
+                            <span asp-validation-for="PMID" class="text-danger small"></span>
+                            <div class="form-text">
+                                <i class="fas fa-lightbulb me-1"></i>
+                                Project Managers have elevated permissions and can manage all aspects of the project.
+                            </div>
+                        </div>
+                    </div>
+
+                    @* Form Actions *@
+                    <hr class="my-4" />
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button type="button" class="btn btn-secondary" onclick="history.back()">
+                            <i class="fas fa-arrow-left me-1"></i>Back
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-user-check me-1"></i>Assign Project Manager
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        @* Help Card *@
+        <div class="card shadow mb-4 border-start border-4 border-primary">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-2">
+                    <i class="fas fa-shield-alt text-primary fa-2x me-3"></i>
+                    <h6 class="m-0 font-weight-bold text-gray-800">Project Manager Responsibilities</h6>
+                </div>
+                <ul class="mb-0 small text-muted">
+                    <li>Oversee project timeline and deliverables</li>
+                    <li>Assign and manage team members</li>
+                    <li>Create and assign tickets to developers</li>
+                    <li>Monitor project progress and health</li>
+                    <li>Communicate with stakeholders</li>
+                    <li>Ensure project stays on track and within scope</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    @* Project Info Sidebar *@
+    <div class="col-12 col-xl-3">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-project-diagram me-1"></i>Project Info
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <small class="text-muted d-block mb-1">Project Name</small>
+                    <strong>@Model.Project.Name</strong>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.Project.Description))
+                {
+                    <div class="mb-3">
+                        <small class="text-muted d-block mb-1">Description</small>
+                        <p class="small mb-0">@Model.Project.Description</p>
+                    </div>
+                }
+
+                <div class="mb-3">
+                    <small class="text-muted d-block mb-1">Start Date</small>
+                    <span class="small">
+                        <i class="far fa-calendar-alt me-1"></i>
+                        @Model.Project.StartDate.ToString("MMM dd, yyyy")
+                    </span>
+                </div>
+
+                <div class="mb-3">
+                    <small class="text-muted d-block mb-1">End Date</small>
+                    <span class="small">
+                        <i class="far fa-calendar-check me-1"></i>
+                        @Model.Project.EndDate.ToString("MMM dd, yyyy")
+                    </span>
+                </div>
+
+                @if (Model.Project.ProjectPriority != null)
+                {
+                    <div class="mb-0">
+                        <small class="text-muted d-block mb-1">Priority</small>
+                        <span class="badge badge-priority-@Model.Project.ProjectPriority.Name.ToLower()">
+                            @Model.Project.ProjectPriority.Name
+                        </span>
+                    </div>
+                }
+            </div>
+        </div>
+
+        @* Current PM Card (if exists) *@
+        @if (Model.Project.Members?.Any() == true)
+        {
+            var currentPM = Model.Project.Members.FirstOrDefault();
+            if (currentPM != null)
+            {
+                <div class="card shadow mb-4 border-start border-4 border-warning">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-info-circle text-warning fa-2x me-3"></i>
+                            <h6 class="m-0 font-weight-bold text-gray-800">Current Status</h6>
+                        </div>
+                        <p class="small text-muted mb-0">
+                            This project may already have team members assigned. Assigning a new Project Manager will grant them full project oversight.
+                        </p>
+                    </div>
+                </div>
+            }
+        }
+    </div>
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Initialize Bootstrap tooltips
+        document.addEventListener('DOMContentLoaded', function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
+}

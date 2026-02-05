@@ -1,36 +1,220 @@
 ﻿@model Twoishday.Models.ViewModels.ProjectMembersViewModel
 
-<div class="container">
-    <h2>Assign Members for</h2>
-    <div class="row">
-        <div class="col-md-6">
-            <h3>@Model.Project.Name</h3>
+@{
+    ViewData["Title"] = "Assign Members";
+}
 
-            <div class="card">
-                <div class="card-header">
-                    <lebel asp-for="@Model.Users" class="control-label">Assign team members for Project</lebel>
+@* Breadcrumb Navigation *@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a asp-controller="Home" asp-action="Dashboard">
+                <i class="fas fa-home"></i> Home
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a asp-controller="Projects" asp-action="AllProjects">Projects</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a asp-controller="Projects" asp-action="Details" asp-route-id="@Model.Project.Id">@Model.Project.Name</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Assign Members</li>
+    </ol>
+</nav>
+
+@* Page Header *@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-2 text-gray-800">
+            <i class="fas fa-users me-2"></i>Assign Team Members
+        </h1>
+        <p class="text-muted mb-0">Select team members for <strong>@Model.Project.Name</strong></p>
+    </div>
+</div>
+
+@* Main Form Card *@
+<div class="row">
+    <div class="col-12 col-xl-9">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-user-plus me-1"></i>Team Member Selection
+                </h6>
+                <span class="badge bg-info">Project: @Model.Project.Name</span>
+            </div>
+            <div class="card-body">
+                <form method="post" asp-action="AssignMembers" asp-controller="Projects">
+                    <input type="hidden" asp-for="Project.Id" />
+
+                    @* Instructions *@
+                    <div class="alert alert-info" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Instructions:</strong> Hold <kbd>Ctrl</kbd> (Windows) or <kbd>Cmd</kbd> (Mac) to select multiple members. 
+                        Use <kbd>Ctrl+A</kbd> to select all.
+                    </div>
+
+                    @* Member Selection *@
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <label asp-for="SelectedUsers" class="form-label fw-bold">
+                                Available Team Members <span class="text-danger">*</span>
+                                <i class="fas fa-question-circle text-muted ms-1" 
+                                   data-bs-toggle="tooltip" 
+                                   data-bs-placement="right" 
+                                   title="Select one or more team members to assign to this project. Members will have access to all project tickets and resources."></i>
+                            </label>
+                            <select asp-for="SelectedUsers" 
+                                    class="form-select" 
+                                    asp-items="@Model.Users" 
+                                    multiple="multiple" 
+                                    size="10" 
+                                    required>
+                            </select>
+                            <span asp-validation-for="SelectedUsers" class="text-danger small"></span>
+                            <div class="form-text">
+                                <i class="fas fa-lightbulb me-1"></i>
+                                Selected members will be able to view and work on tickets within this project.
+                            </div>
+                        </div>
+                    </div>
+
+                    @* Selection Helper Buttons *@
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="btn-group" role="group" aria-label="Selection helpers">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="selectAll()">
+                                    <i class="fas fa-check-double me-1"></i>Select All
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearSelection()">
+                                    <i class="fas fa-times me-1"></i>Clear Selection
+                                </button>
+                            </div>
+                            <small class="text-muted ms-2">
+                                <i class="fas fa-info-circle me-1"></i>
+                                <span id="selectionCount">0</span> member(s) selected
+                            </small>
+                        </div>
+                    </div>
+
+                    @* Form Actions *@
+                    <hr class="my-4" />
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a asp-action="Details" asp-controller="Projects" asp-route-id="@Model.Project.Id" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Back to Project
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-user-check me-1"></i>Assign Selected Members
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        @* Help Card *@
+        <div class="card shadow mb-4 border-start border-4 border-info">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-2">
+                    <i class="fas fa-question-circle text-info fa-2x me-3"></i>
+                    <h6 class="m-0 font-weight-bold text-gray-800">What happens when I assign members?</h6>
                 </div>
-                <div class="card-body">
-                    <form method="post" asp-action="AssignMembers" asp-asp-controller="Projects">
-                        <input hidden asp-for="Project.Id" />
-                        <div class="col-12 md-3">
-                            <div class="form-group">
-                                <select required asp-for="@Model.SelectedUsers" class="form-control" asp-items="@Model.Users" multiple="multiple"></select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-lg offset-2 col-lg-10">
-                                <input type="submit" class="btn alert-primary" value="Assign Users" />
-                            </div>
-                        </div>
-                    </form>
+                <ul class="mb-0 small text-muted">
+                    <li>Assigned members will appear in the project's team roster</li>
+                    <li>They can view all tickets within this project</li>
+                    <li>They can be assigned to individual tickets</li>
+                    <li>They'll receive notifications about project updates</li>
+                    <li>You can modify team membership at any time</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    @* Project Info Sidebar *@
+    <div class="col-12 col-xl-3">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-project-diagram me-1"></i>Project Info
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <small class="text-muted d-block mb-1">Project Name</small>
+                    <strong>@Model.Project.Name</strong>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.Project.Description))
+                {
+                    <div class="mb-3">
+                        <small class="text-muted d-block mb-1">Description</small>
+                        <p class="small mb-0">@Model.Project.Description</p>
+                    </div>
+                }
+
+                <div class="mb-3">
+                    <small class="text-muted d-block mb-1">Start Date</small>
+                    <span class="small">@Model.Project.StartDate.ToString("MMM dd, yyyy")</span>
+                </div>
+
+                <div class="mb-0">
+                    <small class="text-muted d-block mb-1">End Date</small>
+                    <span class="small">@Model.Project.EndDate.ToString("MMM dd, yyyy")</span>
                 </div>
             </div>
         </div>
     </div>
-    <div>
-        <a asp-action="Details" asp-controller="Projects" asp-route-id="@Model.Project.Id">Back to Details</a>
-    </div>
-
-
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Initialize Bootstrap tooltips
+        document.addEventListener('DOMContentLoaded', function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // Update selection count on load and change
+            const selectElement = document.querySelector('select[multiple]');
+            updateSelectionCount();
+
+            selectElement?.addEventListener('change', updateSelectionCount);
+        });
+
+        // Select all options in the multi-select
+        function selectAll() {
+            const selectElement = document.querySelector('select[multiple]');
+            if (selectElement) {
+                for (let i = 0; i < selectElement.options.length; i++) {
+                    selectElement.options[i].selected = true;
+                }
+                updateSelectionCount();
+            }
+        }
+
+        // Clear all selections
+        function clearSelection() {
+            const selectElement = document.querySelector('select[multiple]');
+            if (selectElement) {
+                for (let i = 0; i < selectElement.options.length; i++) {
+                    selectElement.options[i].selected = false;
+                }
+                updateSelectionCount();
+            }
+        }
+
+        // Update the selection count display
+        function updateSelectionCount() {
+            const selectElement = document.querySelector('select[multiple]');
+            const countElement = document.getElementById('selectionCount');
+
+            if (selectElement && countElement) {
+                const selectedCount = Array.from(selectElement.options).filter(opt => opt.selected).length;
+                countElement.textContent = selectedCount;
+            }
+        }
+    </script>
+}

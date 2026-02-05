@@ -26,6 +26,21 @@
     <link href="~/css/project-details.css" rel="stylesheet" asp-append-version="true" />
 }
 
+@* Breadcrumb Navigation *@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a asp-controller="Home" asp-action="Dashboard">
+                <i class="fas fa-home"></i> Home
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a asp-controller="Projects" asp-action="AllProjects">Projects</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+    </ol>
+</nav>
+
 <div class="container-fluid">
     @* Project Header with gradient background *@
     <div class="project-header shadow" id="projectHeader">

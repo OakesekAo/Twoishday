@@ -11,134 +11,230 @@
     TDUser tdUser = await UserManager.GetUserAsync(User);
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h1>Archived Projects</h1>
-</div>
-
-@if (Model.Any())
-{
-    <div class="table-responsive">
-        <table id="archivedProjectsTable" class="table table-hover w-100">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th class="d-none d-md-table-cell">Description</th>
-                    <th class="d-none d-lg-table-cell">Start Date</th>
-                    <th class="d-none d-lg-table-cell">End Date</th>
-                    @if (User.IsInRole(nameof(Roles.Admin)))
-                    {
-                        <th class="d-none d-md-table-cell">Company</th>
-                    }
-                    <th>Priority</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    bool isProjectPM = (await ProjectService.GetProjectManagerAsync(item.Id))?.Id == tdUser.Id;
-                    bool canEdit = User.IsInRole(nameof(Roles.Admin)) || isProjectPM;
-
-                    <tr>
-                        <td>
-                            <strong>@item.Name</strong>
-                            @if (!string.IsNullOrEmpty(item.Description))
-                            {
-                                <div class="d-md-none">
-                                    <small class="text-muted">@item.Description.Substring(0, Math.Min(50, item.Description.Length))@(item.Description.Length > 50 ? "..." : "")</small>
-                                </div>
-                            }
-                        </td>
-                        <td class="d-none d-md-table-cell">@item.Description</td>
-                        <td class="d-none d-lg-table-cell">@item.StartDate.ToString("MM/dd/yyyy")</td>
-                        <td class="d-none d-lg-table-cell">@item.EndDate.ToString("MM/dd/yyyy")</td>
-                        @if (User.IsInRole(nameof(Roles.Admin)))
-                        {
-                            <td class="d-none d-md-table-cell">@(item.Company?.Name ?? "N/A")</td>
-                        }
-                        <td>
-                            @if (item.ProjectPriority != null)
-                            {
-                                var badgeClass = item.ProjectPriority.Name.ToLower() switch
-                                {
-                                    "urgent" => "badge bg-danger",
-                                    "high" => "badge bg-warning text-dark",
-                                    "medium" => "badge bg-info",
-                                    "low" => "badge bg-secondary",
-                                    _ => "badge bg-secondary"
-                                };
-                                <span class="@badgeClass">@item.ProjectPriority.Name</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-secondary">N/A</span>
-                            }
-                        </td>
-                        <td>
-                            <!-- Desktop Actions (≥768px) -->
-                            <div class="d-none d-md-inline-flex gap-1">
-                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary" data-bs-toggle="tooltip" title="View Details">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                @if (canEdit)
-                                {
-                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Edit Project">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a asp-action="Restore" asp-route-id="@item.Id" class="btn btn-sm btn-outline-success" data-bs-toggle="tooltip" title="Restore Project">
-                                        <i class="fas fa-undo"></i>
-                                    </a>
-                                }
-                            </div>
-
-                            <!-- Mobile Actions (<768px) -->
-                            <div class="d-md-none dropdown">
-                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Project actions menu">
-                                    <i class="fas fa-ellipsis-v"></i>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" asp-action="Details" asp-route-id="@item.Id"><i class="fas fa-eye me-2"></i>Details</a></li>
-                                    @if (canEdit)
-                                    {
-                                        <li><a class="dropdown-item" asp-action="Edit" asp-route-id="@item.Id"><i class="fas fa-edit me-2"></i>Edit</a></li>
-                                        <li><a class="dropdown-item" asp-action="Restore" asp-route-id="@item.Id"><i class="fas fa-undo me-2"></i>Restore</a></li>
-                                    }
-                                </ul>
-                            </div>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+@* Page Header *@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-archive me-2"></i>Archived Projects
+        </h1>
     </div>
-}
-else
-{
-    <div class="empty-state text-center py-5">
-        <i class="fas fa-archive fa-4x mb-3"></i>
-        <h4>No Archived Projects</h4>
-        <p class="text-muted">There are no archived projects at this time.</p>
-        <a asp-action="AllProjects" class="btn btn-primary mt-3">
-            <i class="fas fa-list me-2"></i>View Active Projects
+
+    <div>
+        <a asp-action="AllProjects" class="btn btn-primary">
+            <i class="fas fa-list me-1"></i>View Active Projects
         </a>
     </div>
+</div>
+
+@* Projects Table Card *@
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">
+            <i class="fas fa-folder-open me-1"></i>Archived Projects List
+        </h6>
+    </div>
+    <div class="card-body">
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-responsive">
+                <table id="archivedProjectsTable" class="table table-bordered table-hover projects-table w-100">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th class="d-none d-md-table-cell">Description</th>
+                            <th>Priority</th>
+                            <th class="d-none d-md-table-cell">Start Date</th>
+                            <th class="d-none d-md-table-cell">End Date</th>
+                            @if (User.IsInRole(nameof(Roles.Admin)))
+                            {
+                                <th class="d-none d-md-table-cell">Company</th>
+                            }
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                @* Project Name *@
+                                <td>
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="fw-bold text-decoration-none">
+                                        @item.Name
+                                    </a>
+                                </td>
+
+                                @* Description (truncated) - Hidden on mobile *@
+                                <td class="d-none d-md-table-cell">
+                                    @if (!string.IsNullOrEmpty(item.Description))
+                                    {
+                                        @(item.Description.Length > 100 ? item.Description.Substring(0, 100) + "..." : item.Description)
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">No description</span>
+                                    }
+                                </td>
+
+                                @* Priority Badge *@
+                                <td>
+                                    @if (item.ProjectPriority != null)
+                                    {
+                                        var badgeClass = item.ProjectPriority.Name.ToLower() switch
+                                        {
+                                            "urgent" => "bg-danger",
+                                            "high" => "bg-warning text-dark",
+                                            "medium" => "bg-info",
+                                            "low" => "bg-secondary",
+                                            _ => "bg-secondary"
+                                        };
+                                        <span class="badge @badgeClass">
+                                            @item.ProjectPriority.Name
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">N/A</span>
+                                    }
+                                </td>
+
+                                @* Start Date - Hidden on mobile *@
+                                <td class="d-none d-md-table-cell">
+                                    @item.StartDate.ToString("MMM dd, yyyy")
+                                </td>
+
+                                @* End Date - Hidden on mobile *@
+                                <td class="d-none d-md-table-cell">
+                                    @item.EndDate.ToString("MMM dd, yyyy")
+                                </td>
+
+                                @* Company - Admin only, Hidden on mobile *@
+                                @if (User.IsInRole(nameof(Roles.Admin)))
+                                {
+                                    <td class="d-none d-md-table-cell">
+                                        @(item.Company?.Name ?? "N/A")
+                                    </td>
+                                }
+
+                                @* Actions - Responsive: Buttons on desktop, Dropdown on mobile *@
+                                <td class="text-center">
+                                    @{
+                                        bool isProjectPM = (await ProjectService.GetProjectManagerAsync(item.Id))?.Id == tdUser.Id;
+                                        bool canEdit = User.IsInRole(nameof(Roles.Admin)) || isProjectPM;
+                                    }
+
+                                    @* Desktop View - Icon Buttons *@
+                                    <div class="d-none d-md-inline-flex gap-1">
+                                        <a asp-action="Details" asp-route-id="@item.Id" 
+                                           class="btn btn-sm btn-info" 
+                                           data-bs-toggle="tooltip"
+                                           data-bs-placement="top"
+                                           title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+
+                                        @if (canEdit)
+                                        {
+                                            <a asp-action="Edit" asp-route-id="@item.Id" 
+                                               class="btn btn-sm btn-warning" 
+                                               data-bs-toggle="tooltip"
+                                               data-bs-placement="top"
+                                               title="Edit Project">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+
+                                            <a asp-action="Restore" asp-route-id="@item.Id" 
+                                               class="btn btn-sm btn-success" 
+                                               data-bs-toggle="tooltip"
+                                               data-bs-placement="top"
+                                               title="Restore Project">
+                                                <i class="fas fa-undo"></i>
+                                            </a>
+                                        }
+                                    </div>
+
+                                    @* Mobile/Tablet View - Dropdown Menu *@
+                                    <div class="d-md-none dropdown">
+                                        <button class="btn btn-sm btn-primary dropdown-toggle" type="button" 
+                                                id="actionsDropdown@(item.Id)" 
+                                                data-bs-toggle="dropdown" 
+                                                aria-expanded="false"
+                                                aria-label="Project actions menu">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="actionsDropdown@(item.Id)">
+                                            <li>
+                                                <a class="dropdown-item" asp-action="Details" asp-route-id="@item.Id">
+                                                    <i class="fas fa-eye me-2"></i>View Details
+                                                </a>
+                                            </li>
+
+                                            @if (canEdit)
+                                            {
+                                                <li>
+                                                    <a class="dropdown-item" asp-action="Edit" asp-route-id="@item.Id">
+                                                        <i class="fas fa-edit me-2"></i>Edit Project
+                                                    </a>
+                                                </li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li>
+                                                    <a class="dropdown-item text-success" asp-action="Restore" asp-route-id="@item.Id">
+                                                        <i class="fas fa-undo me-2"></i>Restore Project
+                                                    </a>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            @* Empty State *@
+            <div class="empty-state">
+                <i class="fas fa-folder-open"></i>
+                <p>No archived projects found</p>
+                <a asp-action="AllProjects" class="btn btn-primary mt-2">
+                    <i class="fas fa-list me-1"></i>View Active Projects
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/css/projects.css" rel="stylesheet" asp-append-version="true" />
 }
 
 @section Scripts {
     <script>
         $(document).ready(function () {
+            // Determine if Admin (Company column present)
+            var isAdmin = @(User.IsInRole(nameof(Roles.Admin)) ? "true" : "false");
+            var actionsColumnIndex = isAdmin ? 6 : 5;  // Actions column shifts if Company column present
+
             $('#archivedProjectsTable').DataTable({
-                paging: false,
-                info: false,
-                ordering: true,
-                searching: true,
-                responsive: false,
+                paging: false,        // No pagination (MVP requirement)
+                info: false,          // Hide "Showing 1 to X of Y entries"
+                ordering: true,       // Enable column sorting
+                searching: true,      // Enable search box
+                responsive: false,    // Disable DataTables responsive (using CSS instead)
+                language: {
+                    search: "_INPUT_",
+                    searchPlaceholder: "Search archived projects..."
+                },
+                // Default sort by Name (column 0)
+                order: [[0, 'asc']],
+                // Disable sorting on Actions column only
                 columnDefs: [
-                    { orderable: false, targets: -1 }
+                    { orderable: false, targets: [actionsColumnIndex] }
                 ]
             });
 
-            // Initialize tooltips
+            // Initialize Bootstrap tooltips
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
             var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl);

@@ -58,6 +58,11 @@ namespace Twoishday.Controllers
         {
             string userId = _userManager.GetUserId(User);
 
+            if (string.IsNullOrEmpty(userId))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             List<Project> projects = await _projectService.GetUserProjectsAsync(userId);
 
             return View(projects);
@@ -66,20 +71,24 @@ namespace Twoishday.Controllers
         // GET: AllProjects
         public async Task<IActionResult> AllProjects()
         {
+            int? companyId = User.Identity?.GetCompanyId();
+
+            if (companyId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
 
             List<Project> projects = new();
-
-            int companyId = User.Identity.GetCompanyId().Value;
             bool isAdmin = User.IsInRole(nameof(Roles.Admin));
 
             if (User.IsInRole(nameof(Roles.Admin)) || User.IsInRole(nameof(Roles.ProjectManager)))
             {
                 // For Admins, get projects with Company navigation property
-                projects = await _companyInfoService.GetAllProjectsAsync(companyId);
+                projects = await _companyInfoService.GetAllProjectsAsync(companyId.Value);
             }
             else
             {
-                projects = await _projectService.GetAllProjectsByCompanyAsync(companyId);
+                projects = await _projectService.GetAllProjectsByCompanyAsync(companyId.Value);
             }
 
             return View(projects);
@@ -88,10 +97,14 @@ namespace Twoishday.Controllers
         // GET: ArchivedProjects
         public async Task<IActionResult> ArchivedProjects()
         {
+            int? companyId = User.Identity?.GetCompanyId();
 
-            int companyId = User.Identity.GetCompanyId().Value;
+            if (companyId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
 
-            List<Project> projects = await _projectService.GetArchivedProjectsByCompanyAsync(companyId);
+            List<Project> projects = await _projectService.GetArchivedProjectsByCompanyAsync(companyId.Value);
 
             return View(projects);
         }
@@ -100,11 +113,16 @@ namespace Twoishday.Controllers
         // GET: Unassignedprojects
         public async Task<IActionResult> UnassignedProjects()
         {
-            int companyId = User.Identity.GetCompanyId().Value;
+            int? companyId = User.Identity?.GetCompanyId();
+
+            if (companyId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
 
             List<Project> projects = new();
 
-            projects = await _projectService.GetUnassignedProjectsAsync(companyId);
+            projects = await _projectService.GetUnassignedProjectsAsync(companyId.Value);
 
             return View(projects);
         }
@@ -114,12 +132,17 @@ namespace Twoishday.Controllers
         [HttpGet]
         public async Task<IActionResult> AssignPM(int projectId)
         {
-            int companyId = User.Identity.GetCompanyId().Value;
+            int? companyId = User.Identity?.GetCompanyId();
+
+            if (companyId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
 
             AssignPMViewModel model = new();
 
-            model.Project = await _projectService.GetProjectByIdAsync(projectId, companyId);
-            model.PMList = new SelectList(await _rolesService.GetUsersInRoleAsync(nameof(Roles.ProjectManager), companyId), "Id", "FullName");
+            model.Project = await _projectService.GetProjectByIdAsync(projectId, companyId.Value);
+            model.PMList = new SelectList(await _rolesService.GetUsersInRoleAsync(nameof(Roles.ProjectManager), companyId.Value), "Id", "FullName");
 
             return View(model);
         }
@@ -145,14 +168,19 @@ namespace Twoishday.Controllers
         //GET: Assign Members
         public async Task<IActionResult> AssignMembers(int id)
         {
-            int companyId = User.Identity.GetCompanyId().Value;
+            int? companyId = User.Identity?.GetCompanyId();
+
+            if (companyId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
 
             ProjectMembersViewModel model = new();
 
-            model.Project = await _projectService.GetProjectByIdAsync(id, companyId);
+            model.Project = await _projectService.GetProjectByIdAsync(id, companyId.Value);
 
-            List<TDUser> developers = await _rolesService.GetUsersInRoleAsync(nameof(Roles.Developer), companyId);
-            List<TDUser> submitters = await _rolesService.GetUsersInRoleAsync(nameof(Roles.Submitter), companyId);
+            List<TDUser> developers = await _rolesService.GetUsersInRoleAsync(nameof(Roles.Developer), companyId.Value);
+            List<TDUser> submitters = await _rolesService.GetUsersInRoleAsync(nameof(Roles.Submitter), companyId.Value);
 
             List<TDUser> companyMembers = developers.Concat(submitters).ToList();
 
@@ -200,9 +228,14 @@ namespace Twoishday.Controllers
                 return NotFound();
             }
 
-            int companyId = User.Identity.GetCompanyId().Value;
+            int? companyId = User.Identity?.GetCompanyId();
 
-            Project project = await _projectService.GetProjectByIdAsync(id.Value, companyId);
+            if (companyId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            Project project = await _projectService.GetProjectByIdAsync(id.Value, companyId.Value);
 
             if (project == null)
             {
@@ -216,13 +249,18 @@ namespace Twoishday.Controllers
         [Authorize(Roles = "Admin, ProjectManager")]
         public async Task<IActionResult> Create()
         {
-            int companyId = User.Identity!.GetCompanyId()!.Value;
+            int? companyId = User.Identity?.GetCompanyId();
+
+            if (companyId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
 
             //add viewmodel instance
             AddProjectWithPMViewModel model = new();
 
             // lead selectLists with data
-            model.PMList = new SelectList(await _rolesService.GetUsersInRoleAsync(Roles.ProjectManager.ToString(), companyId), "Id", "FullName");
+            model.PMList = new SelectList(await _rolesService.GetUsersInRoleAsync(Roles.ProjectManager.ToString(), companyId.Value), "Id", "FullName");
             model.PriorityList = new SelectList(await _lookupService.GetProjectPrioritiesAsync(), "Id", "Name");
 
 
@@ -239,7 +277,12 @@ namespace Twoishday.Controllers
         {
             if (model != null)
             {
-                int companyId = User.Identity!.GetCompanyId()!.Value;
+                int? companyId = User.Identity?.GetCompanyId();
+
+                if (companyId == null)
+                {
+                    return RedirectToAction("Login", "Account");
+                }
 
                 try
                 {
@@ -250,7 +293,7 @@ namespace Twoishday.Controllers
                         model.Project.ImageContentType = model.Project.ImageFormFile.ContentType;
                     }
 
-                    model.Project.CompanyId = companyId;
+                    model.Project.CompanyId = companyId.Value;
 
                     await _projectService.AddNewProjectAsync(model.Project);
 
@@ -281,16 +324,21 @@ namespace Twoishday.Controllers
         [Authorize(Roles = "Admin, ProjectManager")]
         public async Task<IActionResult> Edit(int? id)
         {
-            int companyId = User.Identity!.GetCompanyId()!.Value;
+            int? companyId = User.Identity?.GetCompanyId();
+
+            if (companyId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
 
             //add viewmodel instance
             AddProjectWithPMViewModel model = new();
 
-            model.Project = await _projectService.GetProjectByIdAsync(id.Value, companyId);
+            model.Project = await _projectService.GetProjectByIdAsync(id.Value, companyId.Value);
 
 
             // lead selectLists with data
-            model.PMList = new SelectList(await _rolesService.GetUsersInRoleAsync(Roles.ProjectManager.ToString(), companyId), "Id", "FullName");
+            model.PMList = new SelectList(await _rolesService.GetUsersInRoleAsync(Roles.ProjectManager.ToString(), companyId.Value), "Id", "FullName");
             model.PriorityList = new SelectList(await _lookupService.GetProjectPrioritiesAsync(), "Id", "Name");
 
 
@@ -354,8 +402,14 @@ namespace Twoishday.Controllers
                 return NotFound();
             }
 
-            int companyId = User.Identity.GetCompanyId().Value;
-            var project = await _projectService.GetProjectByIdAsync(id.Value, companyId);
+            int? companyId = User.Identity?.GetCompanyId();
+
+            if (companyId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var project = await _projectService.GetProjectByIdAsync(id.Value, companyId.Value);
 
 
             if (project == null)
@@ -372,9 +426,14 @@ namespace Twoishday.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ArchiveConfirmed(int id)
         {
-            int companyId = User.Identity.GetCompanyId().Value;
+            int? companyId = User.Identity?.GetCompanyId();
 
-            var project = await _projectService.GetProjectByIdAsync(id, companyId);
+            if (companyId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var project = await _projectService.GetProjectByIdAsync(id, companyId.Value);
             await _projectService.ArchiveProjectAsync(project);
 
             return RedirectToAction(nameof(AllProjects));
@@ -389,8 +448,14 @@ namespace Twoishday.Controllers
                 return NotFound();
             }
 
-            int companyId = User.Identity.GetCompanyId().Value;
-            var project = await _projectService.GetProjectByIdAsync(id.Value, companyId);
+            int? companyId = User.Identity?.GetCompanyId();
+
+            if (companyId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var project = await _projectService.GetProjectByIdAsync(id.Value, companyId.Value);
 
 
             if (project == null)
@@ -407,9 +472,14 @@ namespace Twoishday.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RestoreConfirmed(int id)
         {
-            int companyId = User.Identity.GetCompanyId().Value;
+            int? companyId = User.Identity?.GetCompanyId();
 
-            var project = await _projectService.GetProjectByIdAsync(id, companyId);
+            if (companyId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var project = await _projectService.GetProjectByIdAsync(id, companyId.Value);
             await _projectService.RestoreProjectAsync(project);
 
             return RedirectToAction(nameof(AllProjects));
@@ -417,9 +487,14 @@ namespace Twoishday.Controllers
 
         private async Task<bool> ProjectExists(int id)
         {
-            int companyId = User.Identity.GetCompanyId().Value;
+            int? companyId = User.Identity?.GetCompanyId();
 
-            return (await _projectService.GetAllProjectsByCompanyAsync(companyId)).Any(p => p.Id == id);
+            if (companyId == null)
+            {
+                return false;
+            }
+
+            return (await _projectService.GetAllProjectsByCompanyAsync(companyId.Value)).Any(p => p.Id == id);
         }
     }
 }

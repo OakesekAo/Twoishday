@@ -2,82 +2,204 @@
 @using Twoishday.Models.Enums
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Project";
 }
 
-<h1>Create A New Project</h1>
-
-
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create" method="post" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-            <div class="form-group my-2">
-                <label asp-for="Project!.Name" class="control-label"></label>
-                <input asp-for="Project!.Name" class="form-control" />
-                <span asp-validation-for="Project!.Name" class="text-danger"></span>
-            </div>
-            <div class="form-group my-2">
-                <label asp-for="Project!.Description" class="control-label"></label>
-                <input asp-for="Project!.Description" class="form-control" />
-                <span asp-validation-for="Project!.Description" class="text-danger"></span>
-            </div>
-            <div class="form-group my-2">
-                <label asp-for="Project!.StartDate" class="control-label"></label>
-                <input asp-for="Project!.StartDate" class="form-control" />
-                <span asp-validation-for="Project!.StartDate" class="text-danger"></span>
-            </div>
-            <div class="form-group my-2">
-                <label asp-for="Project!.EndDate" class="control-label"></label>
-                <input asp-for="Project!.EndDate" class="form-control" />
-                <span asp-validation-for="Project!.EndDate" class="text-danger"></span>
-            </div>
-            <div class="form-group my-2">
-                <label class="control-label"> Choose a priority </label>
-                <select asp-for="Project!.ProjectPriorityId" class="form-control" asp-items="@Model.PriorityList"></select>
-            </div>
-
-            <div class="form-group my-2">
-                <label class="control-label"> Project Image </label>
-                <input asp-for="Project!.ImageFormFile" class="form-control" type="file" accept=".png,.jpg.jpeg.gif" onchange="document.getElementById('imageFileData').src = window.Url.createObjectUrl(this.files[0])" />
-                <span asp-validation-for="Project!.ImageFormFile" class="text-danger"></span>
-            </div>
-            <label> Image Preview </label>
-            @if (Model.Project?.ImageFileData != null)
-            {
-                <img id="imageFileData" class="img-fluid img-thumbnail" style="width:100px;height:80px" src="data:image/*;base64,@(Convert.ToBase64String(Model.Project.ImageFileData))" alt="" />
-            }
-            else
-            {
-                <img id="imageFileData" class="img-fluid img-thumbnail" style="width:100px;height:80px;" src="" />
-            }
-
-            @if (User.IsInRole(Roles.Admin.ToString()))
-            {
-                <div class="form-group my-2">
-                    <label class="control-label"> Project Manager </label>
-                    <select asp-for="PmId" class="form-control" asp-items="@Model.PMList">
-                        <option></option>
-                    </select>
-                </div>
-
-            }
-
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+@* Page Header *@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-2 text-gray-800">
+            <i class="fas fa-plus-circle me-2"></i>Create New Project
+        </h1>
+        <p class="text-muted mb-0">Fill in the details below to create a new project</p>
     </div>
 </div>
 
-<div>
-    <a asp-action="AllProjects">Back to List</a>
+@* Main Form Card *@
+<div class="row">
+    <div class="col-12 col-xl-9">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Project Details</h6>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" method="post" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    @* Basic Information Section *@
+                    <h5 class="mb-3">
+                        <i class="fas fa-info-circle me-1"></i>Basic Information
+                    </h5>
+
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label asp-for="Project!.Name" class="form-label fw-bold">
+                                Project Name <span class="text-danger">*</span>
+                                <i class="fas fa-question-circle text-muted ms-1" 
+                                   data-bs-toggle="tooltip" 
+                                   data-bs-placement="right" 
+                                   title="Choose a clear, descriptive name that identifies the project at a glance"></i>
+                            </label>
+                            <input asp-for="Project!.Name" class="form-control" placeholder="Enter project name" required />
+                            <span asp-validation-for="Project!.Name" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label asp-for="Project!.Description" class="form-label fw-bold">
+                                Description <span class="text-danger">*</span>
+                                <i class="fas fa-question-circle text-muted ms-1" 
+                                   data-bs-toggle="tooltip" 
+                                   data-bs-placement="right" 
+                                   title="Provide a brief overview of the project's goals, scope, and expected deliverables"></i>
+                            </label>
+                            <textarea asp-for="Project!.Description" class="form-control" rows="4" placeholder="Describe the project goals and objectives" required></textarea>
+                            <span asp-validation-for="Project!.Description" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    @* Timeline Section *@
+                    <h5 class="mb-3 mt-4">
+                        <i class="fas fa-calendar me-1"></i>Timeline
+                    </h5>
+
+                    <div class="row">
+                        <div class="col-12 col-md-6 mb-3">
+                            <label asp-for="Project!.StartDate" class="form-label fw-bold">
+                                Start Date <span class="text-danger">*</span>
+                                <i class="fas fa-question-circle text-muted ms-1" 
+                                   data-bs-toggle="tooltip" 
+                                   data-bs-placement="right" 
+                                   title="Set realistic start date. You can adjust this later if needed"></i>
+                            </label>
+                            <input asp-for="Project!.StartDate" class="form-control" type="date" required />
+                            <span asp-validation-for="Project!.StartDate" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12 col-md-6 mb-3">
+                            <label asp-for="Project!.EndDate" class="form-label fw-bold">
+                                End Date <span class="text-danger">*</span>
+                                <i class="fas fa-question-circle text-muted ms-1" 
+                                   data-bs-toggle="tooltip" 
+                                   data-bs-placement="right" 
+                                   title="Set realistic end date. You can adjust this later if needed"></i>
+                            </label>
+                            <input asp-for="Project!.EndDate" class="form-control" type="date" required />
+                            <span asp-validation-for="Project!.EndDate" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    @* Priority & Project Manager *@
+                    <div class="row mt-4">
+                        <div class="col-12 col-md-6 mb-3">
+                            <label asp-for="Project!.ProjectPriorityId" class="form-label fw-bold">
+                                Priority <span class="text-danger">*</span>
+                                <i class="fas fa-question-circle text-muted ms-1" 
+                                   data-bs-toggle="tooltip" 
+                                   data-bs-placement="right" 
+                                   title="Select the priority level that reflects the project's urgency and business impact"></i>
+                            </label>
+                            <select asp-for="Project!.ProjectPriorityId" class="form-select" asp-items="@Model.PriorityList" required>
+                                <option value="">-- Select Priority --</option>
+                            </select>
+                            <span asp-validation-for="Project!.ProjectPriorityId" class="text-danger small"></span>
+                        </div>
+
+                        @if (User.IsInRole(nameof(Roles.Admin)))
+                        {
+                            <div class="col-12 col-md-6 mb-3">
+                                <label asp-for="PmId" class="form-label fw-bold">
+                                    Project Manager
+                                    <i class="fas fa-question-circle text-muted ms-1" 
+                                       data-bs-toggle="tooltip" 
+                                       data-bs-placement="right" 
+                                       title="Assign a project manager who will oversee the project and manage team members"></i>
+                                </label>
+                                <select asp-for="PmId" class="form-select" asp-items="@Model.PMList">
+                                    <option value="">-- Select Project Manager --</option>
+                                </select>
+                                <span asp-validation-for="PmId" class="text-danger small"></span>
+                            </div>
+                        }
+                    </div>
+
+                    @* Image Upload Section *@
+                    <h5 class="mb-3 mt-4">
+                        <i class="fas fa-image me-1"></i>Project Image
+                    </h5>
+
+                    <div class="row">
+                        <div class="col-12 col-md-6 mb-3">
+                            <label asp-for="Project!.ImageFormFile" class="form-label fw-bold">
+                                Upload Image
+                            </label>
+                            <input asp-for="Project!.ImageFormFile" class="form-control" type="file" accept=".png,.jpg,.jpeg,.gif" onchange="document.getElementById('imageFileData').src = window.URL.createObjectURL(this.files[0])" />
+                            <span asp-validation-for="Project!.ImageFormFile" class="text-danger small"></span>
+                            <div class="form-text">Accepted formats: PNG, JPG, JPEG, GIF</div>
+                        </div>
+
+                        <div class="col-12 col-md-6 mb-3">
+                            <label class="form-label fw-bold">Image Preview</label>
+                            <div class="border rounded p-2 bg-light d-flex align-items-center justify-content-center" style="height: 150px;">
+                                @if (Model.Project?.ImageFileData != null)
+                                {
+                                    <img id="imageFileData" class="img-fluid rounded" style="max-height: 140px; max-width: 100%;" src="data:image/*;base64,@(Convert.ToBase64String(Model.Project.ImageFileData))" alt="Project image preview" />
+                                }
+                                else
+                                {
+                                    <img id="imageFileData" class="img-fluid rounded d-none" style="max-height: 140px; max-width: 100%;" src="" alt="Project image preview" />
+                                    <div id="imagePlaceholder" class="text-center text-muted">
+                                        <i class="fas fa-image fa-3x mb-2 opacity-25"></i>
+                                        <p class="mb-0 small">No image selected</p>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    @* Form Actions *@
+                    <hr class="my-4" />
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a asp-action="AllProjects" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-check me-1"></i>Create Project
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        // Initialize Bootstrap tooltips
+        document.addEventListener('DOMContentLoaded', function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+
+        // Image preview handling
+        document.querySelector('input[type="file"]')?.addEventListener('change', function(e) {
+            const img = document.getElementById('imageFileData');
+            const placeholder = document.getElementById('imagePlaceholder');
+
+            if (e.target.files && e.target.files[0]) {
+                img.src = URL.createObjectURL(e.target.files[0]);
+                img.classList.remove('d-none');
+                if (placeholder) {
+                    placeholder.classList.add('d-none');
+                }
+            }
+        });
+    </script>
 }
